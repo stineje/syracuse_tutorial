@@ -1,11 +1,11 @@
 To run netgen, please use the following nomenclature:
 ```bash
-netgen -batch lvs "../spice/inv.spice inv" "../xschem/inv.spice inv" $PDK_ROOT/sky130A/libs.tech/netgen/setup.tcl inv.out
+netgen -batch lvs "../magic/$1.spice $1" "../xschem/$1.spice $1" $PDK_ROOT/gf180mcuC/libs.tech/netgen/gf180mcuC_setup.tcl $1.out
 ```
 
 Or this can be accomplished by running the runNetgen.bash script:
 ```bash
-./runNetlist.bash inv
+./runNetlist.bash gf180mcu_osu_sc_gp12t3v3__inv_1
 ```
 
-Keep in mind that the above script utilizes the top-level name in place of the "inv" name shown above if other circuits are desired.
+Keep in mind that the above script utilizes the top-level name in place of the "gf180mcu_osu_sc_gp12t3v3__inv_1" name shown above if other circuits are desired.

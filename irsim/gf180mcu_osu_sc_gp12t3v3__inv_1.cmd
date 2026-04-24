@@ -1,7 +1,7 @@
 | testvectors
 stepsize 10.0
-h vdd
-l gnd
+h VDD
+l VSS
 ana A Y
 analyzer
 l A
