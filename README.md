@@ -2,13 +2,17 @@
 
 ## Authors
 
-**Landon Burleson (lrburle) **  
+**[Landon Burleson](https://github.com/lrburle)**  
 Ph.D. Candidate and Research Contributor  
 Open-Source VLSI and GF180MCU Flow Development  
 
-**James E. Stine, Jr. (stineje) **  
+**[James E. Stine, Jr.](https://github.com/stineje)**  
 Edward Joullian Endowed Chair in Engineering  
 Professor, Electrical and Computer Engineering  
+
+---
+
+## Tool Installation and PDK Setup
 
 ---
 
