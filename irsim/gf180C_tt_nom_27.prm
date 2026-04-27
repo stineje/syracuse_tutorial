@@ -66,6 +66,3 @@ resistance pfet_03v3 dynamic-high   1.0    0.15  6.155554e+03
 resistance pfet_03v3 dynamic-low    1.0    0.15  1.775042e+03
 resistance pfet_03v3 static         1.0    0.15  2.240383e+03
 
-; pgnet
-power_net_name VDD
-ground_net_name VSS
