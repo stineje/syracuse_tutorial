@@ -14,10 +14,6 @@ Professor, Electrical and Computer Engineering
 
 ## Tool Installation and PDK Setup
 
----
-
-## Tool Installation and PDK Setup
-
 This project uses the open-source GF180MCU Process Design Kit (PDK) together with a complete open-source VLSI design flow based on tools maintained by Dr. Tim Edwards and the broader open-source silicon community.
 
 The recommended installation path is through the `open_pdks` framework, which provides technology setup, device models, standard-cell support, extraction rules, and integration for multiple open-source design tools.
