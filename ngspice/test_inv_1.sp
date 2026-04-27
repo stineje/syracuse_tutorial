@@ -15,7 +15,7 @@
 ************************************
 * Power supplies
 ************************************
-.param VDDVAL=5.0
+.param VDDVAL=3.3
 
 VDD vdd 0 DC {VDDVAL}
 VSS vss 0 DC 0
