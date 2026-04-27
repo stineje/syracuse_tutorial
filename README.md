@@ -2,11 +2,11 @@
 
 ## Authors
 
-**Landon Burleson**  
+**Landon Burleson (lrburle) **  
 Ph.D. Candidate and Research Contributor  
 Open-Source VLSI and GF180MCU Flow Development  
 
-**James E. Stine, Jr.**  
+**James E. Stine, Jr. (stineje) **  
 Edward Joullian Endowed Chair in Engineering  
 Professor, Electrical and Computer Engineering  
 
