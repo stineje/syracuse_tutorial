@@ -68,3 +68,6 @@ macro Control_Shift_XK_S "select area ntrans"
 
 macro Shift_D "select clear; move S 6; paint m1c"
 macro Shift_F "select clear; move N 6; paint m1c"
+
+# load bind keys (optional)
+source $env(PDK_ROOT)/gf180mcuC/libs.tech/magic/gf180mcuC-BindKeys
