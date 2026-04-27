@@ -39,6 +39,7 @@ cd open_pdks
 ./configure --enable-gf180mcu-pdk=/usr/local/share/pdk
 make
 sudo make install
+'''
 
 If you do not have root or administrator permissions on your system, a very practical approach is to install everything inside your home directory, for example:
 
