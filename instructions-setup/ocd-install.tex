@@ -385,12 +385,40 @@ xschem with the sky130A symbol set, run:
 xschem --rcfile "$XSCHEM_RC"
 \end{lstlisting}
 
-\section{open\_pdks}
+\section{open\_pdks (install last)}
 
-\texttt{open\_pdks} is a meta-installer: it fetches and configures vendor PDKs
-(sky130, gf180mcu, etc.) and stitches them into Magic, Netgen, ngspice, and
-xschem. It must be configured \emph{after} the tools above are on
-\texttt{PATH} so it can locate them.
+\texttt{open\_pdks} (\url{https://github.com/RTimothyEdwards/open_pdks}) is
+a meta-installer: it fetches and configures vendor PDKs (sky130A, gf180mcu,
+etc.) and stitches them into Magic, Netgen, ngspice, and xschem. \textbf{It
+must be the last thing you build.} During \texttt{configure} and
+\texttt{make install}, \texttt{open\_pdks} probes \texttt{PATH} for each
+tool and runs them to generate tech files, magic \texttt{.magicrc} files,
+netgen LVS setup files, and xschem libraries. If any of the tools is
+missing or points at a different prefix, the resulting PDK install will be
+incomplete or inconsistent.
+
+\subsection*{Prerequisites for this section}
+
+Before running anything in this section, confirm \emph{all} of the
+following:
+
+\begin{enumerate}[leftmargin=2em]
+  \item Magic, Netgen, IRSIM, ngspice, and xschem are all installed under
+        \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT} (Sections 3--7 of this guide).
+  \item You have sourced \texttt{setup.sh} in the current shell:
+        \begin{lstlisting}
+source /path/to/repo/setup.sh
+        \end{lstlisting}
+  \item All four tools resolve under
+        \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/bin}:
+        \begin{lstlisting}
+which magic netgen ngspice xschem
+        \end{lstlisting}
+        Each path printed should start with the value of
+        \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT}. If any of them is missing or
+        points at \texttt{/usr/bin}, fix that \emph{first} --- do not
+        proceed with \texttt{open\_pdks}.
+\end{enumerate}
 
 \subsection{Configure and build}
 
