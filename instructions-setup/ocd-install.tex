@@ -515,7 +515,13 @@ class or coursework folder:
 cd ~                  # or wherever you keep coursework
 git clone https://github.com/stineje/gf180mcu-open-source-vlsi.git
 cd gf180mcu-open-source-vlsi
+git checkout ieee_chipathon
 \end{lstlisting}
+
+\noindent The \texttt{ieee\_chipathon} branch holds the IEEE ChipAThon
+materials for this course. The default branch (\texttt{main}) tracks
+upstream development; for coursework, stay on
+\texttt{ieee\_chipathon} unless you are told otherwise.
 
 \subsection{Source the tutorial's \texttt{setup.sh}}
 
@@ -548,10 +554,11 @@ working through the tutorial.
 \subsection{Keeping up to date}
 
 The tutorial is updated periodically with new examples and corrections.
-To pull the latest:
+To pull the latest on the \texttt{ieee\_chipathon} branch:
 
 \begin{lstlisting}
 cd ~/gf180mcu-open-source-vlsi
+git checkout ieee_chipathon    # confirm you're on the course branch
 git pull
 \end{lstlisting}
 
@@ -789,6 +796,7 @@ run:
 cd /foss/designs
 git clone https://github.com/stineje/gf180mcu-open-source-vlsi.git
 cd gf180mcu-open-source-vlsi
+git checkout ieee_chipathon
 
 export PDK_ROOT=/foss/pdks
 export PDK=gf180mcuC
@@ -863,4 +871,3 @@ Section~\ref{sec:troubleshooting} \emph{Troubleshooting}), or working on
 Linux with full root access to the host.
 
 \end{document}
-
