@@ -280,14 +280,16 @@ irsim -V
 \section{ngspice}
 
 ngspice is required by \texttt{open\_pdks} for simulation models and
-verification. It is built from a release tarball rather than git.
+verification. We build it from the official GitHub mirror at
+\url{https://github.com/ngspice/ngspice} rather than the SourceForge
+tarball, because SourceForge's file layout occasionally shifts and
+hard-coded version URLs go stale; cloning sidesteps that entirely.
 
 \begin{lstlisting}
 cd "$OPEN_CIRCUITDESIGN_ROOT"
-NGSPICE_VER=44
-wget https://sourceforge.net/projects/ngspice/files/ng-spice-rework/${NGSPICE_VER}/ngspice-${NGSPICE_VER}.tar.gz
-tar xzf ngspice-${NGSPICE_VER}.tar.gz
-cd ngspice-${NGSPICE_VER}
+git clone https://github.com/ngspice/ngspice.git
+cd ngspice
+./autogen.sh
 mkdir -p release && cd release
 ../configure --prefix="$OPEN_CIRCUITDESIGN_ROOT" \
              --enable-xspice \
@@ -301,12 +303,20 @@ make install
 
 \noindent\textbf{Notes:}
 \begin{itemize}[leftmargin=2em]
-  \item Adjust \texttt{NGSPICE\_VER} to the latest stable release; check
-        \url{https://ngspice.sourceforge.io/download.html}.
+  \item \texttt{./autogen.sh} regenerates the \texttt{configure} script
+        from \texttt{configure.ac}. The git tree does not ship a
+        pre-generated \texttt{configure} the way release tarballs do, so
+        this step is mandatory. It needs \texttt{autoconf},
+        \texttt{automake}, and \texttt{libtool} (already in the
+        prerequisite list).
+  \item To build a tagged release rather than master, run
+        \texttt{git tag -l} after cloning to list available tags, then
+        \texttt{git checkout <tag>} (e.g.\ \texttt{git checkout ngspice-44})
+        before running \texttt{autogen.sh}.
   \item \texttt{-{}-enable-xspice} is required for code-model support used by
         many open-source PDKs.
-  \item Building inside a \texttt{release/} subdirectory keeps the source tree
-        clean as recommended by the ngspice manual.
+  \item Building inside a \texttt{release/} subdirectory keeps the source
+        tree clean as recommended by the ngspice manual.
 \end{itemize}
 
 Verify:
@@ -450,7 +460,7 @@ cd open_pdks
 The \texttt{--enable-*-pdk} flags select which PDKs to fetch. Drop any you
 don't need; each PDK is several gigabytes after install.
 
-\subsection{Install (this step is long depending on machine --- expect 30--90 minutes)}
+\subsection{Install (this step is long --- expect 30--90 minutes)}
 
 \begin{lstlisting}
 make
@@ -521,7 +531,7 @@ $OPEN_CIRCUITDESIGN_ROOT
 |-- magic/          # cloned source trees (sit alongside bin/, lib/, share/)
 |-- netgen/
 |-- irsim/
-|-- ngspice-44/
+|-- ngspice/
 |-- xschem/
 `-- open_pdks/
 \end{lstlisting}
@@ -545,13 +555,6 @@ $OPEN_CIRCUITDESIGN_ROOT
     Build Magic with Cairo and OpenGL support enabled (the default when
     the corresponding \texttt{-dev} packages are present). Re-run
     \texttt{./configure} after installing them and rebuild.
-
-  \item[I do not see gf180mcu when sourcing \texttt{setup.sh}]
-    There seems to be some issue with the configure script which I
-    have not debugged yet.  My original mistake is I made a mistake in
-    the configure command line (i.e., typo).  The easiest solution is
-    to delete everything and start again - I am not sure a better
-    solution right now. 
 
   \item[\texttt{open\_pdks} fails to find Magic / Netgen]
     Ensure \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/bin} is on \texttt{PATH}
