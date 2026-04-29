@@ -49,7 +49,7 @@
 
 \title{Installing Magic, Netgen, IRSIM, ngspice, xschem, and open\_pdks\\
        \large An installation guide for the Open Circuit Design tool suite}
-\author{James E. Stine}
+\author{James E. Stine, Jr.}
 \date{\today}
 
 \begin{document}
@@ -126,8 +126,14 @@ sudo apt-get install -y \
     bison flex \
     autoconf automake libtool \
     libfftw3-dev libxaw7-dev \
+    libxrender-dev libxcb-render0-dev libxcb-render-util0-dev \
+    gawk \
     python3 python3-pip
 \end{lstlisting}
+
+\noindent The last three lines beyond the original toolchain bring in
+xschem-specific dependencies (\texttt{libxrender}, the XCB render libs, and
+\texttt{gawk}) along with Python, which is used by \texttt{open\_pdks}.
 
 \subsection{Build dependencies (Red Hat / Fedora)}
 
@@ -143,6 +149,8 @@ sudo dnf install -y \
     bison flex \
     autoconf automake libtool \
     fftw-devel \
+    libXrender-devel \
+    gawk \
     python3 python3-pip
 \end{lstlisting}
 
@@ -156,9 +164,8 @@ Pick the install root once and use it throughout. The default in
 # Match the value in setup.sh (edit setup.sh first if you want a different path)
 export OPEN_CIRCUITDESIGN_ROOT="$HOME/opencircuitdesign"
 
-mkdir -p "$OPEN_CIRCUITDESIGN_ROOT"
-mkdir -p "$OPEN_CIRCUITDESIGN_ROOT/src"   # all sources will be cloned here
-cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+mkdir -p "$OPEN_CIRCUITDESIGN_ROOT"   # source trees clone in here directly
+cd "$OPEN_CIRCUITDESIGN_ROOT"
 \end{lstlisting}
 
 \subsection{Use the included \texttt{setup.sh}}
@@ -209,7 +216,7 @@ not need it --- they only need \texttt{OPEN\_CIRCUITDESIGN\_ROOT} exported.
 Magic is the VLSI layout editor used as the geometry engine for the entire flow.
 
 \begin{lstlisting}
-cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+cd "$OPEN_CIRCUITDESIGN_ROOT"
 git clone https://github.com/RTimothyEdwards/magic.git
 cd magic
 ./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT"
@@ -229,7 +236,7 @@ magic -dnull -noconsole -T scmos <<< "version; quit -noprompt"
 Netgen is the LVS (Layout-Versus-Schematic) and netlist comparison tool.
 
 \begin{lstlisting}
-cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+cd "$OPEN_CIRCUITDESIGN_ROOT"
 git clone https://github.com/RTimothyEdwards/netgen.git
 cd netgen
 ./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT"
@@ -249,7 +256,7 @@ netgen -batch <<< "puts [version]; quit"
 IRSIM is a switch-level simulator that integrates with Magic.
 
 \begin{lstlisting}
-cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+cd "$OPEN_CIRCUITDESIGN_ROOT"
 git clone https://github.com/RTimothyEdwards/irsim.git
 cd irsim
 ./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT" \
@@ -276,7 +283,7 @@ ngspice is required by \texttt{open\_pdks} for simulation models and
 verification. It is built from a release tarball rather than git.
 
 \begin{lstlisting}
-cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+cd "$OPEN_CIRCUITDESIGN_ROOT"
 NGSPICE_VER=44
 wget https://sourceforge.net/projects/ngspice/files/ng-spice-rework/${NGSPICE_VER}/ngspice-${NGSPICE_VER}.tar.gz
 tar xzf ngspice-${NGSPICE_VER}.tar.gz
@@ -311,12 +318,32 @@ ngspice -v
 
 \section{xschem}
 
-\texttt{setup.sh} configures xschem variables
+xschem is the schematic capture tool used to drive ngspice simulations and
+generate netlists for LVS against Magic layouts. It is a separate upstream
+project from Tim Edwards' tools, but \texttt{setup.sh} configures the
+xschem-related environment variables
 (\texttt{XSCHEM\_SYSTEM\_LIBRARY\_PATH}, \texttt{XSCHEM\_LIBRARY\_PATH},
-\texttt{XSCHEM\_RC}), so install it into the same prefix.
+\texttt{XSCHEM\_RC}), so we install it into the same prefix.
+
+\subsection{Verify xschem build dependencies}
+
+If you followed the prerequisite lists in Section~2, you already have
+everything xschem needs. The xschem-specific packages are:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Debian / Ubuntu:} \texttt{libxaw7-dev}, \texttt{libxrender-dev},
+        \texttt{libxcb-render0-dev}, \texttt{libxcb-render-util0-dev},
+        \texttt{tcl-dev}, \texttt{tk-dev}, \texttt{flex}, \texttt{bison},
+        \texttt{libcairo2-dev}, \texttt{gawk}.
+  \item \textbf{Red Hat / Fedora:} \texttt{libXaw-devel},
+        \texttt{libXrender-devel}, \texttt{tcl-devel}, \texttt{tk-devel},
+        \texttt{flex}, \texttt{bison}, \texttt{cairo-devel}, \texttt{gawk}.
+\end{itemize}
+
+\subsection{Clone, configure, build, and install}
 
 \begin{lstlisting}
-cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+cd "$OPEN_CIRCUITDESIGN_ROOT"
 git clone https://github.com/StefanSchippers/xschem.git
 cd xschem
 ./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT"
@@ -324,11 +351,38 @@ make -j$(nproc)
 make install
 \end{lstlisting}
 
-Verify:
+\noindent\textbf{Notes:}
+\begin{itemize}[leftmargin=2em]
+  \item xschem ships a hand-written \texttt{configure} script (not autotools
+        generated). \texttt{-{}-prefix} works as expected; most other
+        autotools flags do not apply.
+  \item If you need translucent rectangle / fill rendering, ensure the
+        XCB render packages (\texttt{libxcb-render0-dev},
+        \texttt{libxcb-render-util0-dev}) were installed before
+        \texttt{configure} ran --- otherwise xschem falls back to a
+        non-translucent code path.
+  \item The build installs system symbol libraries to
+        \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/share/xschem/}, which is what
+        \texttt{setup.sh} points \texttt{XSCHEM\_SYSTEM\_LIBRARY\_PATH} at.
+\end{itemize}
+
+\subsection{Verify}
 
 \begin{lstlisting}
 which xschem
 xschem --version
+
+# Launch with no schematic to confirm the GUI starts:
+xschem -b
+\end{lstlisting}
+
+\noindent After \texttt{open\_pdks} is installed (next section),
+\texttt{setup.sh} will additionally export \texttt{XSCHEM\_LIBRARY\_PATH}
+and \texttt{XSCHEM\_RC} pointing at the sky130A xschem libraries. To open
+xschem with the sky130A symbol set, run:
+
+\begin{lstlisting}
+xschem --rcfile "$XSCHEM_RC"
 \end{lstlisting}
 
 \section{open\_pdks}
@@ -345,7 +399,7 @@ Note the underscore in \texttt{-{}-with-pdk\_root}: this is what
 \texttt{PDK\_ROOT="\$OPEN\_CIRCUITDESIGN\_ROOT/share/pdk"}.
 
 \begin{lstlisting}
-cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+cd "$OPEN_CIRCUITDESIGN_ROOT"
 git clone https://github.com/RTimothyEdwards/open_pdks.git
 cd open_pdks
 
@@ -429,13 +483,12 @@ $OPEN_CIRCUITDESIGN_ROOT
 |   |   |-- sky130A/
 |   |   `-- gf180mcuA/
 |   `-- man/
-`-- src/            # cloned source trees
-    |-- magic/
-    |-- netgen/
-    |-- irsim/
-    |-- ngspice-44/
-    |-- xschem/
-    `-- open_pdks/
+|-- magic/          # cloned source trees (sit alongside bin/, lib/, share/)
+|-- netgen/
+|-- irsim/
+|-- ngspice-44/
+|-- xschem/
+`-- open_pdks/
 \end{lstlisting}
 
 \section{Troubleshooting}
@@ -478,7 +531,7 @@ $OPEN_CIRCUITDESIGN_ROOT
 
   \item[Updating later]
     Each tool can be rebuilt independently:
-    \texttt{cd \$OPEN\_CIRCUITDESIGN\_ROOT/src/<tool> \&\& git pull \&\& make \&\& make install}.
+    \texttt{cd \$OPEN\_CIRCUITDESIGN\_ROOT/<tool> \&\& git pull \&\& make \&\& make install}.
     Re-run \texttt{open\_pdks} only when changing PDK selection or after a
     significant Magic/Netgen update.
 \end{description}
