@@ -491,6 +491,70 @@ echo "$NETGEN_SETUP"  # -> .../sky130A/libs.tech/netgen/sky130A_setup.tcl
 magic -rcfile "$MAGIC_MAGICRC"
 \end{lstlisting}
 
+\section{Tutorial repository}
+
+A companion tutorial for using this tool stack to design analog/digital
+circuits in the Global Foundries 180\,nm MCU process is available at:
+
+\begin{center}
+\url{https://github.com/stineje/gf180mcu-open-source-vlsi}
+\end{center}
+
+\noindent The repository ships with the \texttt{setup.sh} this guide
+references, schematic and layout examples, simulation testbenches, and
+step-by-step instructions for the canonical Magic / Netgen / xschem /
+ngspice flow against the gf180mcu PDK.
+
+\subsection{Clone the tutorial}
+
+Pick any directory you like for tutorial work --- it does \emph{not} need
+to live under \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT}. A common choice is a
+class or coursework folder:
+
+\begin{lstlisting}
+cd ~                  # or wherever you keep coursework
+git clone https://github.com/stineje/gf180mcu-open-source-vlsi.git
+cd gf180mcu-open-source-vlsi
+\end{lstlisting}
+
+\subsection{Source the tutorial's \texttt{setup.sh}}
+
+The tutorial's \texttt{instructions-setup/setup.sh} is the same script
+described in this guide. Source it from your shell so all the tool and
+PDK environment variables are set:
+
+\begin{lstlisting}
+source ./instructions-setup/setup.sh
+\end{lstlisting}
+
+\noindent To make this automatic for every login shell, append the line
+to your \texttt{\textasciitilde/.bashrc} with the absolute path:
+
+\begin{lstlisting}
+echo "source $HOME/gf180mcu-open-source-vlsi/instructions-setup/setup.sh" \
+     >> ~/.bashrc
+\end{lstlisting}
+
+\subsection{Verify the tutorial environment}
+
+After sourcing, the script prints a summary. Confirm that
+\texttt{PDK\,=\,gf180mcuC} (or whatever variant you have installed) and
+that \texttt{magic}, \texttt{netgen}, \texttt{ngspice}, and
+\texttt{xschem} all resolve under \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/bin}.
+If \texttt{PDK} reports \texttt{sky130A} instead of a gf180mcu variant,
+your gf180mcu install didn't complete --- revisit Section~8 before
+working through the tutorial.
+
+\subsection{Keeping up to date}
+
+The tutorial is updated periodically with new examples and corrections.
+To pull the latest:
+
+\begin{lstlisting}
+cd ~/gf180mcu-open-source-vlsi
+git pull
+\end{lstlisting}
+
 \section{Putting it all together}
 
 \subsection{Quick sanity check}
@@ -596,6 +660,7 @@ $OPEN_CIRCUITDESIGN_ROOT
   \item ngspice: \url{https://ngspice.sourceforge.io}
   \item xschem on GitHub: \url{https://github.com/StefanSchippers/xschem}
   \item open\_pdks on GitHub: \url{https://github.com/RTimothyEdwards/open_pdks}
+  \item gf180mcu open-source VLSI tutorial: \url{https://github.com/stineje/gf180mcu-open-source-vlsi}
 \end{itemize}
 
 \end{document}
