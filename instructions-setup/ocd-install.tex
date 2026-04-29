@@ -517,6 +517,34 @@ git clone https://github.com/stineje/gf180mcu-open-source-vlsi.git
 cd gf180mcu-open-source-vlsi
 \end{lstlisting}
 
+\subsection{Source the tutorial's \texttt{setup.sh}}
+
+The tutorial's \texttt{instructions-setup/setup.sh} is the same script
+described in this guide. Source it from your shell so all the tool and
+PDK environment variables are set:
+
+\begin{lstlisting}
+source ./instructions-setup/setup.sh
+\end{lstlisting}
+
+\noindent To make this automatic for every login shell, append the line
+to your \texttt{\textasciitilde/.bashrc} with the absolute path:
+
+\begin{lstlisting}
+echo "source $HOME/gf180mcu-open-source-vlsi/instructions-setup/setup.sh" \
+     >> ~/.bashrc
+\end{lstlisting}
+
+\subsection{Verify the tutorial environment}
+
+After sourcing, the script prints a summary. Confirm that
+\texttt{PDK\,=\,gf180mcuC} (or whatever variant you have installed) and
+that \texttt{magic}, \texttt{netgen}, \texttt{ngspice}, and
+\texttt{xschem} all resolve under \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/bin}.
+If \texttt{PDK} reports \texttt{sky130A} instead of a gf180mcu variant,
+your gf180mcu install didn't complete --- revisit Section~8 before
+working through the tutorial.
+
 \subsection{Keeping up to date}
 
 The tutorial is updated periodically with new examples and corrections.
@@ -573,6 +601,7 @@ $OPEN_CIRCUITDESIGN_ROOT
 \end{lstlisting}
 
 \section{Troubleshooting}
+\label{sec:troubleshooting}
 
 \begin{description}[leftmargin=0em, style=nextline]
   \item[\texttt{ERROR: Directory \$OPEN\_CIRCUITDESIGN\_ROOT does not exist}]
@@ -633,6 +662,205 @@ $OPEN_CIRCUITDESIGN_ROOT
   \item xschem on GitHub: \url{https://github.com/StefanSchippers/xschem}
   \item open\_pdks on GitHub: \url{https://github.com/RTimothyEdwards/open_pdks}
   \item gf180mcu open-source VLSI tutorial: \url{https://github.com/stineje/gf180mcu-open-source-vlsi}
+  \item IIC-OSIC-TOOLS container: \url{https://github.com/iic-jku/iic-osic-tools}
 \end{itemize}
 
+\appendix
+
+\section{Container alternative for macOS and Windows}
+\label{app:container}
+
+The build-from-source instructions in Sections~3--8 target Linux. On
+macOS and Windows, native builds of Magic, xschem, and the rest of the
+stack are painful (or impossible without WSL). The recommended
+alternative is the \textbf{IIC-OSIC-TOOLS} Docker container from the
+Institute for Integrated Circuits at TU Wien, which bundles Magic,
+Netgen, IRSIM, xschem, ngspice, KLayout, OpenROAD, yosys, and a
+pre-installed PDK set (sky130A, gf180mcuC, etc.) into a single image.
+Repository: \url{https://github.com/iic-jku/iic-osic-tools}.
+
+This appendix covers running the container on macOS and Windows. Linux
+users can also use it, but the from-source path documented earlier is
+usually preferable on Linux.
+
+\subsection{Prerequisites}
+
+\textbf{macOS:} Install Docker Desktop from
+\url{https://www.docker.com/products/docker-desktop/}. Launch it once
+after install so the engine starts; you should see ``Engine running'' in
+the lower-left of the Docker Desktop window.
+
+\textbf{Windows:} Install Docker Desktop with the WSL2 backend (the
+default on Windows~10 and~11). If WSL2 isn't already installed, open
+PowerShell as administrator and run:
+
+\begin{lstlisting}
+wsl --install
+\end{lstlisting}
+
+\noindent then reboot. After install, launch Docker Desktop once.
+
+\textbf{Both platforms:} you will run shell commands. On macOS, open the
+\textbf{Terminal} app (Spotlight: \texttt{Cmd+Space}, type
+\texttt{Terminal}). On Windows, open the WSL Ubuntu terminal (Start
+menu) or use Docker Desktop's built-in shell (the \texttt{>\_} icon at
+the bottom of the Docker Desktop window). Verify Docker is reachable:
+
+\begin{lstlisting}
+docker --version
+\end{lstlisting}
+
+\subsection{Apple Silicon caveat}
+
+The \texttt{hpretl/iic-osic-tools} image is built for x86\_64. On
+Apple Silicon (M1/M2/M3/M4), Docker Desktop runs it under emulation:
+roughly 2--3$\times$ slower than native and uses more RAM, but
+functional. You may see a warning the first time the image is pulled:
+
+\begin{lstlisting}
+WARNING: The requested image's platform (linux/amd64) does not match
+         the detected host platform (linux/arm64/v8)
+\end{lstlisting}
+
+\noindent That is expected; you can pin the platform explicitly to
+suppress it:
+
+\begin{lstlisting}
+docker pull --platform linux/amd64 hpretl/iic-osic-tools:latest
+\end{lstlisting}
+
+Intel Macs and Windows hosts have no equivalent issue.
+
+\subsection{Clone the wrapper scripts and start a VNC session}
+
+The container's GUI tools are exposed via a browser-based VNC desktop,
+which works identically on macOS and Windows and avoids the X11
+forwarding problems of XQuartz / VcXsrv. From your terminal:
+
+\begin{lstlisting}
+cd ~
+git clone https://github.com/iic-jku/iic-osic-tools.git
+cd iic-osic-tools
+./start_vnc.sh
+\end{lstlisting}
+
+The first run pulls the image (roughly 10\,GB --- expect 5 to 45 minutes
+depending on bandwidth). You can watch progress under
+\textbf{Images} in Docker Desktop's left sidebar. When the script
+finishes starting the container, it prints a URL similar to:
+
+\begin{lstlisting}
+http://localhost:8888/vnc.html?autoconnect=true&resize=remote
+\end{lstlisting}
+
+Open that URL in any browser. You will land on a full XFCE desktop with
+Magic, xschem, KLayout, ngspice, Netgen, and IRSIM all installed. PDKs
+are at \texttt{/foss/pdks/} inside the container ---
+\texttt{sky130A}, \texttt{gf180mcuC}, etc.
+
+\subsection{Mounting your work into the container}
+
+By default the container's \texttt{/foss/designs} directory is bound to
+\texttt{\textasciitilde/iic-osic-tools-volume/} on the host. Anything
+saved there from inside the container persists on your machine.
+
+To mount a different host folder --- say a clone of the gf180mcu
+tutorial --- pass the path as an argument:
+
+\begin{lstlisting}
+./start_vnc.sh ~/work/gf180mcu-open-source-vlsi
+\end{lstlisting}
+
+\noindent On Windows from WSL2, refer to Windows-side paths via the
+\texttt{/mnt/c/} mount:
+
+\begin{lstlisting}
+./start_vnc.sh /mnt/c/Users/jstine/Documents/work
+\end{lstlisting}
+
+\subsection{Using the gf180mcu tutorial inside the container}
+
+The PDK layout inside the container matches what \texttt{setup.sh}
+expects, but the container is already pre-configured --- you do not need
+to source \texttt{setup.sh}. Inside the VNC desktop, open a terminal and
+run:
+
+\begin{lstlisting}
+cd /foss/designs
+git clone https://github.com/stineje/gf180mcu-open-source-vlsi.git
+cd gf180mcu-open-source-vlsi
+
+export PDK_ROOT=/foss/pdks
+export PDK=gf180mcuC
+magic -rcfile $PDK_ROOT/$PDK/libs.tech/magic/$PDK.magicrc
+\end{lstlisting}
+
+\subsection{Improving the VNC experience}
+
+The browser-based VNC is fine for one or two windows. For serious
+schematic editing, the browser sometimes intercepts keyboard shortcuts.
+Two fixes:
+
+\begin{itemize}[leftmargin=2em]
+  \item Press \texttt{F11} in the browser to enter fullscreen mode --- this
+        frees most shortcuts.
+  \item Connect with a native VNC client instead. The
+        \texttt{start\_vnc.sh} script also exposes a raw VNC port
+        (typically \texttt{localhost:5901}). On macOS, the built-in
+        \textbf{Screen Sharing} app handles \texttt{vnc://localhost:5901}
+        cleanly; on Windows, install TigerVNC or RealVNC.
+\end{itemize}
+
+\subsection{Stopping, restarting, and updating}
+
+The container keeps running until you stop it. From the host terminal:
+
+\begin{lstlisting}
+docker ps                       # list running containers
+docker stop iic-osic-tools      # stop the container
+\end{lstlisting}
+
+\noindent or click the stop button next to the container in the Docker
+Desktop \textbf{Containers} tab. To use it again later:
+
+\begin{lstlisting}
+cd ~/iic-osic-tools && ./start_vnc.sh
+\end{lstlisting}
+
+\noindent To pull a newer release of the image (the project ships
+periodic updates):
+
+\begin{lstlisting}
+docker pull hpretl/iic-osic-tools:latest
+./start_vnc.sh
+\end{lstlisting}
+
+\noindent Files in your mounted work directory are preserved across
+image updates; only the container's read-only OS layer changes.
+
+\subsection{When to use this versus the from-source build}
+
+The container gets you running in minutes and isolates the entire stack
+from the host. Trade-offs to keep in mind:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Pros:} no native build dependencies; identical environment
+        across macOS / Windows / Linux teammates; one command to update;
+        easy to throw away and recreate.
+  \item \textbf{Cons:} ~10\,GB disk; GUI feels less snappy over VNC than a
+        native window; tool versions follow the container release cadence
+        (you cannot trivially patch Magic and rebuild without forking the
+        image); on Apple Silicon, x86\_64 emulation has a measurable
+        performance cost.
+\end{itemize}
+
+For class assignments and tutorial work on macOS or Windows, the
+container is almost always the right choice. Building from source
+(Sections~3--8) is preferable when you are hacking on the tools
+themselves, debugging a specific build issue (such as the gf180mcu
+\texttt{(UNNAMED)} annotation error discussed in
+Section~\ref{sec:troubleshooting} \emph{Troubleshooting}), or working on
+Linux with full root access to the host.
+
 \end{document}
+
