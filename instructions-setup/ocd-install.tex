@@ -1,0 +1,498 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{titlesec}
+
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = blue!60!black,
+  urlcolor   = blue!60!black,
+  citecolor  = blue!60!black,
+}
+
+% --- Code listing style for shell commands -----------------------------------
+\definecolor{shellbg}{HTML}{F5F5F5}
+\definecolor{shellrule}{HTML}{CCCCCC}
+\definecolor{shellcomment}{HTML}{6A737D}
+\definecolor{shellkeyword}{HTML}{005CC5}
+
+\lstdefinestyle{shell}{
+  basicstyle      = \ttfamily\footnotesize,
+  backgroundcolor = \color{shellbg},
+  frame           = single,
+  rulecolor       = \color{shellrule},
+  framesep        = 6pt,
+  xleftmargin     = 6pt,
+  xrightmargin    = 6pt,
+  breaklines      = true,
+  showstringspaces= false,
+  columns         = fullflexible,
+  keepspaces      = true,
+  commentstyle    = \color{shellcomment}\itshape,
+  keywordstyle    = \color{shellkeyword}\bfseries,
+  morecomment     = [l]{\#},
+  morekeywords    = {sudo, apt, apt-get, yum, dnf, brew, git, make, cd, mkdir,
+                     export, source, ./configure, configure, echo, tar, wget,
+                     curl, ldconfig, which, ln, cp, rm, mv},
+  literate        = {/}{{/}}1 {-}{{-}}1 {=}{{=}}1,
+}
+\lstset{style=shell}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.6em}{}
+
+\title{Installing Magic, Netgen, IRSIM, ngspice, xschem, and open\_pdks\\
+       \large An installation guide for the Open Circuit Design tool suite}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Overview}
+
+This guide walks through building and installing the open-source analog/digital
+IC design flow maintained primarily by Tim Edwards into a self-contained user
+prefix. The default location used throughout this document is
+
+\begin{lstlisting}
+$HOME/opencircuitdesign
+\end{lstlisting}
+
+\noindent which matches the default \texttt{OPEN\_CIRCUITDESIGN\_ROOT} value
+in the included \texttt{setup.sh}. If you would rather install elsewhere
+(e.g.\ \texttt{/opt/opencircuitdesign} or \texttt{/home/user/ocd}), simply
+edit the line near the top of \texttt{setup.sh}:
+
+\begin{lstlisting}
+export OPEN_CIRCUITDESIGN_ROOT="$HOME/opencircuitdesign"
+\end{lstlisting}
+
+\noindent and use that same path everywhere this guide writes
+\texttt{\$OPEN\_CIRCUITDESIGN\_ROOT}.
+
+The tools covered are:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Magic} --- VLSI layout editor (\url{http://opencircuitdesign.com/magic}).
+  \item \textbf{Netgen} --- netlist comparison / LVS
+        (\url{http://opencircuitdesign.com/netgen}).
+  \item \textbf{IRSIM} --- switch-level digital simulator
+        (\url{http://opencircuitdesign.com/irsim}).
+  \item \textbf{ngspice} --- analog/mixed-signal SPICE simulator
+        (\url{https://ngspice.sourceforge.io}). \emph{Note:} ngspice is a
+        separate project from Tim Edwards' tools, but is required by
+        \texttt{open\_pdks} and is conventionally bundled with the suite.
+  \item \textbf{xschem} --- schematic capture
+        (\url{https://github.com/StefanSchippers/xschem}). Also a separate
+        upstream, included because \texttt{setup.sh} configures it.
+  \item \textbf{open\_pdks} --- installer/wrapper for open-source PDKs such
+        as \texttt{sky130A} and \texttt{gf180mcu}
+        (\url{https://github.com/RTimothyEdwards/open_pdks}).
+\end{itemize}
+
+Everything will be installed under a single prefix:
+
+\begin{lstlisting}
+$OPEN_CIRCUITDESIGN_ROOT
+|-- bin/        # magic, netgen, irsim, ngspice, xschem executables
+|-- lib/        # shared libraries
+|-- share/      # PDKs, scripts, technology files, magic/netgen/xschem libs
+|-- include/    # development headers
+\end{lstlisting}
+
+\section{Prerequisites}
+
+\subsection{Build dependencies (Debian / Ubuntu)}
+
+Install the toolchain and X/Tcl libraries before building any of the tools.
+
+\begin{lstlisting}
+sudo apt-get update
+sudo apt-get install -y \
+    build-essential m4 tcsh csh git \
+    tcl-dev tk-dev \
+    libcairo2-dev \
+    mesa-common-dev libglu1-mesa-dev \
+    libncurses-dev \
+    libx11-dev libxpm-dev libxt-dev \
+    libreadline-dev \
+    bison flex \
+    autoconf automake libtool \
+    libfftw3-dev libxaw7-dev \
+    python3 python3-pip
+\end{lstlisting}
+
+\subsection{Build dependencies (Red Hat / Fedora)}
+
+\begin{lstlisting}
+sudo dnf install -y \
+    gcc gcc-c++ make m4 tcsh git \
+    tcl-devel tk-devel \
+    cairo-devel \
+    mesa-libGL-devel mesa-libGLU-devel \
+    ncurses-devel \
+    libX11-devel libXpm-devel libXt-devel libXaw-devel \
+    readline-devel \
+    bison flex \
+    autoconf automake libtool \
+    fftw-devel \
+    python3 python3-pip
+\end{lstlisting}
+
+\subsection{Create the install prefix and source directories}
+
+Pick the install root once and use it throughout. The default in
+\texttt{setup.sh} is \texttt{\$HOME/opencircuitdesign}; set it in your shell
+\emph{first} so the build commands below pick it up:
+
+\begin{lstlisting}
+# Match the value in setup.sh (edit setup.sh first if you want a different path)
+export OPEN_CIRCUITDESIGN_ROOT="$HOME/opencircuitdesign"
+
+mkdir -p "$OPEN_CIRCUITDESIGN_ROOT"
+mkdir -p "$OPEN_CIRCUITDESIGN_ROOT/src"   # all sources will be cloned here
+cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+\end{lstlisting}
+
+\subsection{Use the included \texttt{setup.sh}}
+
+Rather than hand-rolling \texttt{PATH}, \texttt{LD\_LIBRARY\_PATH},
+\texttt{PDK\_ROOT}, and the per-tool environment variables, the repository
+ships a \texttt{setup.sh} script that handles all of it. After confirming
+the \texttt{OPEN\_CIRCUITDESIGN\_ROOT} line at the top of \texttt{setup.sh}
+matches the prefix you chose above, source the script in any shell where
+you want the tools available:
+
+\begin{lstlisting}
+# One-off: source it in the current shell
+source /path/to/repo/setup.sh
+
+# Persistent: have every login shell source it automatically
+echo 'source /path/to/repo/setup.sh' >> ~/.bashrc
+\end{lstlisting}
+
+\noindent The script:
+
+\begin{itemize}[leftmargin=2em]
+  \item Verifies \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT} exists and bails out
+        loudly if it doesn't.
+  \item Prepends \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/bin} to \texttt{PATH}
+        and \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/lib} to
+        \texttt{LD\_LIBRARY\_PATH}.
+  \item Sets \texttt{PDK\_ROOT} to
+        \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/share/pdk} (the standard
+        \texttt{open\_pdks} install location when configured with
+        \texttt{-{}-with-pdk\_root=\$OPEN\_CIRCUITDESIGN\_ROOT/share/pdk}).
+  \item Exports per-tool variables: \texttt{MAGIC\_HOME}, \texttt{NETGEN\_HOME},
+        \texttt{NGSPICE\_SHARE\_DIR}, \texttt{XSCHEM\_SYSTEM\_LIBRARY\_PATH}.
+  \item If \texttt{sky130A} is found under \texttt{\$PDK\_ROOT}, it also
+        sets \texttt{PDK=sky130A}, \texttt{SKY130A},
+        \texttt{MAGIC\_MAGICRC}, \texttt{NETGEN\_SETUP},
+        \texttt{XSCHEM\_LIBRARY\_PATH}, and \texttt{XSCHEM\_RC}.
+  \item Prints a short summary so you can confirm everything resolved
+        correctly.
+\end{itemize}
+
+You should source \texttt{setup.sh} \emph{before} running the verification
+commands at the end of each section below. The build steps themselves do
+not need it --- they only need \texttt{OPEN\_CIRCUITDESIGN\_ROOT} exported.
+
+\section{Magic}
+
+Magic is the VLSI layout editor used as the geometry engine for the entire flow.
+
+\begin{lstlisting}
+cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+git clone https://github.com/RTimothyEdwards/magic.git
+cd magic
+./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT"
+make -j$(nproc)
+make install
+\end{lstlisting}
+
+Verify (after \texttt{source setup.sh}):
+
+\begin{lstlisting}
+which magic
+magic -dnull -noconsole -T scmos <<< "version; quit -noprompt"
+\end{lstlisting}
+
+\section{Netgen}
+
+Netgen is the LVS (Layout-Versus-Schematic) and netlist comparison tool.
+
+\begin{lstlisting}
+cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+git clone https://github.com/RTimothyEdwards/netgen.git
+cd netgen
+./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT"
+make -j$(nproc)
+make install
+\end{lstlisting}
+
+Verify:
+
+\begin{lstlisting}
+which netgen
+netgen -batch <<< "puts [version]; quit"
+\end{lstlisting}
+
+\section{IRSIM}
+
+IRSIM is a switch-level simulator that integrates with Magic.
+
+\begin{lstlisting}
+cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+git clone https://github.com/RTimothyEdwards/irsim.git
+cd irsim
+./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT" \
+            --with-tcl=/usr/lib/tcl8.6 \
+            --with-tk=/usr/lib/tk8.6
+make -j$(nproc)
+make install
+\end{lstlisting}
+
+If your distribution uses a different Tcl/Tk version, adjust the
+\texttt{-{}-with-tcl}/\texttt{-{}-with-tk} flags accordingly (or omit them to
+let \texttt{configure} auto-detect).
+
+Verify:
+
+\begin{lstlisting}
+which irsim
+irsim -V
+\end{lstlisting}
+
+\section{ngspice}
+
+ngspice is required by \texttt{open\_pdks} for simulation models and
+verification. It is built from a release tarball rather than git.
+
+\begin{lstlisting}
+cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+NGSPICE_VER=44
+wget https://sourceforge.net/projects/ngspice/files/ng-spice-rework/${NGSPICE_VER}/ngspice-${NGSPICE_VER}.tar.gz
+tar xzf ngspice-${NGSPICE_VER}.tar.gz
+cd ngspice-${NGSPICE_VER}
+mkdir -p release && cd release
+../configure --prefix="$OPEN_CIRCUITDESIGN_ROOT" \
+             --enable-xspice \
+             --enable-cider \
+             --enable-openmp \
+             --with-readline=yes \
+             --disable-debug
+make -j$(nproc)
+make install
+\end{lstlisting}
+
+\noindent\textbf{Notes:}
+\begin{itemize}[leftmargin=2em]
+  \item Adjust \texttt{NGSPICE\_VER} to the latest stable release; check
+        \url{https://ngspice.sourceforge.io/download.html}.
+  \item \texttt{-{}-enable-xspice} is required for code-model support used by
+        many open-source PDKs.
+  \item Building inside a \texttt{release/} subdirectory keeps the source tree
+        clean as recommended by the ngspice manual.
+\end{itemize}
+
+Verify:
+
+\begin{lstlisting}
+which ngspice
+ngspice -v
+\end{lstlisting}
+
+\section{xschem}
+
+\texttt{setup.sh} configures xschem variables
+(\texttt{XSCHEM\_SYSTEM\_LIBRARY\_PATH}, \texttt{XSCHEM\_LIBRARY\_PATH},
+\texttt{XSCHEM\_RC}), so install it into the same prefix.
+
+\begin{lstlisting}
+cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+git clone https://github.com/StefanSchippers/xschem.git
+cd xschem
+./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT"
+make -j$(nproc)
+make install
+\end{lstlisting}
+
+Verify:
+
+\begin{lstlisting}
+which xschem
+xschem --version
+\end{lstlisting}
+
+\section{open\_pdks}
+
+\texttt{open\_pdks} is a meta-installer: it fetches and configures vendor PDKs
+(sky130, gf180mcu, etc.) and stitches them into Magic, Netgen, ngspice, and
+xschem. It must be configured \emph{after} the tools above are on
+\texttt{PATH} so it can locate them.
+
+\subsection{Configure and build}
+
+Note the underscore in \texttt{-{}-with-pdk\_root}: this is what
+\texttt{setup.sh} expects when it sets
+\texttt{PDK\_ROOT="\$OPEN\_CIRCUITDESIGN\_ROOT/share/pdk"}.
+
+\begin{lstlisting}
+cd "$OPEN_CIRCUITDESIGN_ROOT/src"
+git clone https://github.com/RTimothyEdwards/open_pdks.git
+cd open_pdks
+
+./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT" \
+            --with-pdk_root="$OPEN_CIRCUITDESIGN_ROOT/share/pdk" \
+            --enable-sky130-pdk \
+            --enable-gf180mcu-pdk \
+            --with-magic="$OPEN_CIRCUITDESIGN_ROOT/bin/magic" \
+            --with-netgen="$OPEN_CIRCUITDESIGN_ROOT/bin/netgen" \
+            --with-ngspice="$OPEN_CIRCUITDESIGN_ROOT/bin/ngspice"
+\end{lstlisting}
+
+The \texttt{--enable-*-pdk} flags select which PDKs to fetch. Drop any you
+don't need; each PDK is several gigabytes after install.
+
+\subsection{Install (this step is long --- expect 30--90 minutes)}
+
+\begin{lstlisting}
+make
+make install
+\end{lstlisting}
+
+The PDKs land under \texttt{\$PDK\_ROOT}, e.g.
+\texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/share/pdk/sky130A}. Once
+\texttt{sky130A} exists, sourcing \texttt{setup.sh} again will pick it up
+and export \texttt{PDK}, \texttt{SKY130A}, \texttt{MAGIC\_MAGICRC},
+\texttt{NETGEN\_SETUP}, \texttt{XSCHEM\_LIBRARY\_PATH}, and
+\texttt{XSCHEM\_RC} automatically.
+
+\subsection{Verify}
+
+\begin{lstlisting}
+source /path/to/repo/setup.sh
+
+ls "$PDK_ROOT"
+# Expect: sky130A  sky130B  gf180mcuA  gf180mcuB  gf180mcuC  gf180mcuD  ...
+
+# setup.sh should now report sky130A as the selected PDK:
+echo "$PDK"           # -> sky130A
+echo "$MAGIC_MAGICRC" # -> .../sky130A/libs.tech/magic/sky130A.magicrc
+echo "$NETGEN_SETUP"  # -> .../sky130A/libs.tech/netgen/sky130A_setup.tcl
+
+# Open a sky130 layout in magic to confirm tech files were installed:
+magic -rcfile "$MAGIC_MAGICRC"
+\end{lstlisting}
+
+\section{Putting it all together}
+
+\subsection{Quick sanity check}
+
+After every tool is installed and you have sourced \texttt{setup.sh},
+the script's own summary output should list each tool's location. You can
+also run:
+
+\begin{lstlisting}
+for tool in magic netgen irsim ngspice xschem; do
+    printf "%-8s -> %s\n" "$tool" "$(which $tool 2>/dev/null || echo '<not found>')"
+done
+\end{lstlisting}
+
+All paths should resolve under \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/bin}.
+
+\subsection{Recommended directory layout after install}
+
+\begin{lstlisting}
+$OPEN_CIRCUITDESIGN_ROOT
+|-- bin/
+|   |-- magic
+|   |-- netgen
+|   |-- irsim
+|   |-- ngspice
+|   `-- xschem
+|-- include/
+|-- lib/
+|-- share/
+|   |-- magic/      # MAGIC_HOME
+|   |-- netgen/     # NETGEN_HOME
+|   |-- ngspice/    # NGSPICE_SHARE_DIR
+|   |-- xschem/     # XSCHEM_SYSTEM_LIBRARY_PATH
+|   |-- pdk/        # PDK_ROOT
+|   |   |-- sky130A/
+|   |   `-- gf180mcuA/
+|   `-- man/
+`-- src/            # cloned source trees
+    |-- magic/
+    |-- netgen/
+    |-- irsim/
+    |-- ngspice-44/
+    |-- xschem/
+    `-- open_pdks/
+\end{lstlisting}
+
+\section{Troubleshooting}
+
+\begin{description}[leftmargin=0em, style=nextline]
+  \item[\texttt{ERROR: Directory \$OPEN\_CIRCUITDESIGN\_ROOT does not exist}]
+    \texttt{setup.sh} aborts when its target prefix is missing. Either
+    create the directory (\texttt{mkdir -p "\$OPEN\_CIRCUITDESIGN\_ROOT"})
+    or edit the \texttt{OPEN\_CIRCUITDESIGN\_ROOT=...} line at the top of
+    \texttt{setup.sh} to point somewhere that does exist.
+
+  \item[\texttt{configure: error: Tcl headers not found}]
+    Make sure \texttt{tcl-dev} / \texttt{tcl-devel} is installed and that
+    \texttt{tclConfig.sh} lives in a standard location (typically
+    \texttt{/usr/lib/tclX.Y/}). Pass \texttt{-{}-with-tcl=<dir>} explicitly
+    if needed.
+
+  \item[Magic launches but graphics are missing]
+    Build Magic with Cairo and OpenGL support enabled (the default when
+    the corresponding \texttt{-dev} packages are present). Re-run
+    \texttt{./configure} after installing them and rebuild.
+
+  \item[\texttt{open\_pdks} fails to find Magic / Netgen]
+    Ensure \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/bin} is on \texttt{PATH}
+    before running \texttt{./configure}, or pass the absolute paths via
+    \texttt{-{}-with-magic=}, \texttt{-{}-with-netgen=},
+    \texttt{-{}-with-ngspice=} as shown above.
+
+  \item[\texttt{setup.sh} warns ``\texttt{No PDK directory found}'']
+    \texttt{open\_pdks} hasn't been built/installed yet, or it was
+    configured with a different \texttt{-{}-with-pdk\_root}. Re-run
+    \texttt{./configure} for \texttt{open\_pdks} with
+    \texttt{-{}-with-pdk\_root="\$OPEN\_CIRCUITDESIGN\_ROOT/share/pdk"}.
+
+  \item[Shared libraries not found at runtime]
+    Source \texttt{setup.sh} (it sets \texttt{LD\_LIBRARY\_PATH}). For a
+    system-wide alternative, add \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/lib}
+    to \texttt{/etc/ld.so.conf.d/opencircuitdesign.conf} and run
+    \texttt{sudo ldconfig}.
+
+  \item[Updating later]
+    Each tool can be rebuilt independently:
+    \texttt{cd \$OPEN\_CIRCUITDESIGN\_ROOT/src/<tool> \&\& git pull \&\& make \&\& make install}.
+    Re-run \texttt{open\_pdks} only when changing PDK selection or after a
+    significant Magic/Netgen update.
+\end{description}
+
+\section{References}
+
+\begin{itemize}[leftmargin=2em]
+  \item Open Circuit Design home page: \url{http://opencircuitdesign.com}
+  \item Magic on GitHub: \url{https://github.com/RTimothyEdwards/magic}
+  \item Netgen on GitHub: \url{https://github.com/RTimothyEdwards/netgen}
+  \item IRSIM on GitHub: \url{https://github.com/RTimothyEdwards/irsim}
+  \item ngspice: \url{https://ngspice.sourceforge.io}
+  \item xschem on GitHub: \url{https://github.com/StefanSchippers/xschem}
+  \item open\_pdks on GitHub: \url{https://github.com/RTimothyEdwards/open_pdks}
+\end{itemize}
+
+\end{document}
