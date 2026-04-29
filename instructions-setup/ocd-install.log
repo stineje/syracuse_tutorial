@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.29)  29 APR 2026 09:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.29)  29 APR 2026 09:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -521,14 +521,8 @@ L3 programming layer <2024-01-22>
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-
-Package rerunfilecheck Warning: File `ocd-install.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `ocd-install.out':
-(rerunfilecheck)             Before: 4CFC1FAF93CA5933343A34B36AF01A76;3729
-(rerunfilecheck)             After:  A30DB5A0298DF6F5DAD304D3924A8652;3843.
+Package rerunfilecheck Info: File `ocd-install.out' has not changed.
+(rerunfilecheck)             Checksum: A30DB5A0298DF6F5DAD304D3924A8652;3843.
  ) 
 Here is how much of TeX's memory you used:
  11728 strings out of 476182
@@ -551,7 +545,7 @@ mf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist
 /type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /public/amsfonts/cm/cmtt12.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
 c/amsfonts/cm/cmtt9.pfb>
-Output written on ocd-install.pdf (9 pages, 192406 bytes).
+Output written on ocd-install.pdf (9 pages, 192403 bytes).
 PDF statistics:
  451 PDF objects out of 1000 (max. 8388607)
  412 compressed objects within 5 object streams
