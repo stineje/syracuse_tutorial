@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.29)  29 APR 2026 08:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.29)  29 APR 2026 08:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -282,7 +282,7 @@ File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count290
 \l__pdf_internal_box=\box55
 )
-No file ocd-install.aux.
+(./ocd-install.aux)
 \openout1 = `ocd-install.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 55.
@@ -303,6 +303,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 55.
 LaTeX Font Info:    ... okay on input line 55.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 55.
 LaTeX Font Info:    ... okay on input line 55.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -353,6 +354,7 @@ LaTeX Font Info:    ... okay on input line 55.
 )
 \c@lstlisting=\count297
 Package hyperref Info: Link coloring ON on input line 55.
+ (./ocd-install.out) (./ocd-install.out)
 \@outlinefile=\write3
 \openout3 = `ocd-install.out'.
 
@@ -364,7 +366,8 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 57.
 LaTeX Font Info:    Trying to load font information for TS1+cmtt on input line 
 65.
- (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmtt.fd
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmtt.fd
 File: ts1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <9> not available
@@ -480,20 +483,14 @@ L3 programming layer <2024-01-22>
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-
-Package rerunfilecheck Warning: File `ocd-install.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `ocd-install.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  FE662EB18C57E9DCEDA90D874066001D;3077.
+Package rerunfilecheck Info: File `ocd-install.out' has not changed.
+(rerunfilecheck)             Checksum: FE662EB18C57E9DCEDA90D874066001D;3077.
  ) 
 Here is how much of TeX's memory you used:
- 11663 strings out of 476182
- 175684 string characters out of 5795595
+ 11692 strings out of 476182
+ 176105 string characters out of 5795595
  2194975 words of memory out of 5000000
- 33373 multiletter control sequences out of 15000+600000
+ 33396 multiletter control sequences out of 15000+600000
  565493 words of font info for 62 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  75i,6n,79p,1200b,1962s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -510,10 +507,10 @@ mf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist
 /type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /public/amsfonts/cm/cmtt12.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
 c/amsfonts/cm/cmtt9.pfb>
-Output written on ocd-install.pdf (8 pages, 180853 bytes).
+Output written on ocd-install.pdf (8 pages, 183600 bytes).
 PDF statistics:
- 354 PDF objects out of 1000 (max. 8388607)
- 317 compressed objects within 4 object streams
+ 415 PDF objects out of 1000 (max. 8388607)
+ 378 compressed objects within 4 object streams
  197 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 161 words of extra memory for PDF output out of 10000 (max. 10000000)
 
