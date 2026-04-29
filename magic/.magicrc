@@ -16,8 +16,8 @@ puts stdout "Sourcing design .magicrc for technology gf180mcu"
 drc euclidean on
 
 # loading technology
-#tech load ../../char/techfiles/gf180mcuC.tech
-tech load $env(PDK_ROOT)/gf180mcuC/libs.tech/magic/gf180mcuC.tech
+#tech load ../../char/techfiles/gf180mcuD.tech
+tech load $env(PDK_ROOT)/gf180mcuD/libs.tech/magic/gf180mcuD.tech
 
 ###############################################################################
 #  Default .magicrc macro file (original)
@@ -132,4 +132,4 @@ magic::resumeout
 catch {source ${CAD_ROOT}/magic/sys/site.def}
 
 # load bind keys (optional)
-# source $env(PDK_ROOT)/gf180mcuC/libs.tech/magic/gf180mcuC-BindKeys
+# source $env(PDK_ROOT)/gf180mcuD/libs.tech/magic/gf180mcuD-BindKeys
