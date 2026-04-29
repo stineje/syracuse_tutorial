@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
-#
+# -----------------------------------------------------------------------------
 # setup_opencircuitdesign.sh
+#
 # Environment setup for Magic / Netgen / ngspice / xschem / irsim
 # plus open_pdks (gf180mcuC preferred, sky130A fallback) under: $HOME/ocd
 #
+# Author : James E. Stine <james.stine@okstate.edu>
+# Date   : 2026-04-29
+#
+# Usage  : source setup.sh
+#          PDK_PREFERENCE=sky130A source setup.sh    # override default PDK
+# -----------------------------------------------------------------------------
 
 # -------------------------------------------------------------------
 # Root of your OpenCircuitDesign install
