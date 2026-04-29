@@ -1,40 +1,14 @@
 #!/usr/bin/env bash
-#!/usr/bin/env bash
 #
-# ============================================================================
 # setup_opencircuitdesign.sh
+# Environment setup for Magic / Netgen / ngspice / xschem / irsim
+# plus open_pdks (gf180mcuC preferred, sky130A fallback) under: $HOME/ocd
 #
-# Open-Source VLSI Environment Setup Script
-#
-# Author: James E. Stine, Jr.
-# Edward Joullian Endowed Chair in Engineering
-# Professor, Electrical and Computer Engineering
-#
-# Research Areas:
-# Computer Architecture | VLSI Design | RISC-V Systems | Open-Source Silicon
-#
-# This script configures the environment for:
-#   - Magic      (layout editor and extraction)
-#   - Netgen     (LVS verification)
-#   - ngspice    (circuit simulation)
-#   - Xschem     (schematic capture)
-#   - IRSIM      (switch-level simulation)
-#   - open_pdks  (PDK installation and technology support)
-#
-# Default installation location:
-#   $HOME/opencircuitdesign
-#
-# Supported PDK Example:
-#   sky130A (via open_pdks)
-#
-# Intended for educational, research, and open-source VLSI development flows.
-#
-# ============================================================================
 
 # -------------------------------------------------------------------
 # Root of your OpenCircuitDesign install
 # -------------------------------------------------------------------
-export OPEN_CIRCUITDESIGN_ROOT="$HOME/opencircuitdesign"
+export OPEN_CIRCUITDESIGN_ROOT="$HOME/ocd"
 
 # Sanity check
 if [ ! -d "$OPEN_CIRCUITDESIGN_ROOT" ]; then
@@ -64,7 +38,7 @@ fi
 # PDK_ROOT for open_pdks
 # -------------------------------------------------------------------
 # This is the standard install location for open_pdks when configured
-# with --with-pdk_root=$OPEN_CIRCUITDESIGN_ROOT/share/pdk
+# with --prefix=$OPEN_CIRCUITDESIGN_ROOT (PDKs land in $prefix/share/pdk).
 #
 if [ -d "$OPEN_CIRCUITDESIGN_ROOT/share/pdk" ]; then
     export PDK_ROOT="$OPEN_CIRCUITDESIGN_ROOT/share/pdk"
@@ -97,40 +71,75 @@ if [ -d "$OPEN_CIRCUITDESIGN_ROOT/share/netgen" ]; then
 fi
 
 # -------------------------------------------------------------------
-# SKY130A PDK (from open_pdks)
+# Active PDK selection
 # -------------------------------------------------------------------
-if [ -n "$PDK_ROOT" ] && [ -d "$PDK_ROOT/sky130A" ]; then
-    export PDK="sky130A"
-    export SKY130A="$PDK_ROOT/sky130A"
+# Priority order:
+#   1. PDK_PREFERENCE   -- if set in the environment before sourcing this
+#                          script, that PDK is used (e.g. PDK_PREFERENCE=sky130A)
+#   2. gf180mcuC        -- preferred default
+#   3. sky130A          -- fallback
+#
+# To force sky130A in a single shell:
+#     PDK_PREFERENCE=sky130A source setup.sh
+#
+PDK_PREFERENCE="${PDK_PREFERENCE:-gf180mcuC}"
 
-    # Magic: use sky130A tech file / rc
-    if [ -f "$SKY130A/libs.tech/magic/sky130A.magicrc" ]; then
-        export MAGIC_MAGICRC="$SKY130A/libs.tech/magic/sky130A.magicrc"
+_select_pdk() {
+    # $1 = PDK name, e.g. gf180mcuC or sky130A
+    local pdkname="$1"
+    local pdkpath="$PDK_ROOT/$pdkname"
+
+    [ -d "$pdkpath" ] || return 1
+
+    export PDK="$pdkname"
+
+    # Convenience var matching the PDK name (e.g. GF180MCU_C, SKY130A).
+    # Uppercase, '-' -> '_'.
+    local varname
+    varname="$(echo "$pdkname" | tr '[:lower:]-' '[:upper:]_')"
+    export "$varname=$pdkpath"
+
+    # Magic: tech / rc file
+    if [ -f "$pdkpath/libs.tech/magic/${pdkname}.magicrc" ]; then
+        export MAGIC_MAGICRC="$pdkpath/libs.tech/magic/${pdkname}.magicrc"
     fi
 
     # Netgen: LVS setup
-    if [ -f "$SKY130A/libs.tech/netgen/sky130A_setup.tcl" ]; then
-        export NETGEN_SETUP="$SKY130A/libs.tech/netgen/sky130A_setup.tcl"
+    if [ -f "$pdkpath/libs.tech/netgen/${pdkname}_setup.tcl" ]; then
+        export NETGEN_SETUP="$pdkpath/libs.tech/netgen/${pdkname}_setup.tcl"
     fi
 
-    # xschem: sky130 libraries + rc
-    if [ -d "$SKY130A/libs.tech/xschem" ]; then
-        # PDK-specific libs (on top of any system libs)
+    # xschem: PDK libraries + rc (prepend so PDK libs win over any system libs)
+    if [ -d "$pdkpath/libs.tech/xschem" ]; then
         if [ -z "$XSCHEM_LIBRARY_PATH" ]; then
-            export XSCHEM_LIBRARY_PATH="$SKY130A/libs.tech/xschem"
+            export XSCHEM_LIBRARY_PATH="$pdkpath/libs.tech/xschem"
         else
-            export XSCHEM_LIBRARY_PATH="$SKY130A/libs.tech/xschem:$XSCHEM_LIBRARY_PATH"
+            export XSCHEM_LIBRARY_PATH="$pdkpath/libs.tech/xschem:$XSCHEM_LIBRARY_PATH"
         fi
 
-        if [ -f "$SKY130A/libs.tech/xschem/xschemrc" ]; then
-            export XSCHEM_RC="$SKY130A/libs.tech/xschem/xschemrc"
+        if [ -f "$pdkpath/libs.tech/xschem/xschemrc" ]; then
+            export XSCHEM_RC="$pdkpath/libs.tech/xschem/xschemrc"
         fi
     fi
-else
-    if [ -n "$PDK_ROOT" ]; then
-        echo "WARNING: $PDK_ROOT/sky130A not found – sky130A PDK not installed?"
+    return 0
+}
+
+if [ -n "$PDK_ROOT" ]; then
+    if _select_pdk "$PDK_PREFERENCE"; then
+        :   # picked $PDK_PREFERENCE
+    elif [ "$PDK_PREFERENCE" != "gf180mcuC" ] && _select_pdk "gf180mcuC"; then
+        echo "NOTE: $PDK_PREFERENCE not installed; falling back to gf180mcuC."
+    elif _select_pdk "sky130A"; then
+        if [ "$PDK_PREFERENCE" != "sky130A" ]; then
+            echo "NOTE: $PDK_PREFERENCE not installed; falling back to sky130A."
+        fi
+    else
+        echo "WARNING: Neither gf180mcuC nor sky130A found under $PDK_ROOT"
+        echo "         Looked for: $PDK_ROOT/$PDK_PREFERENCE, $PDK_ROOT/gf180mcuC, $PDK_ROOT/sky130A"
     fi
 fi
+
+unset -f _select_pdk
 
 # -------------------------------------------------------------------
 # Convenience: show what we just did
@@ -147,8 +156,8 @@ command -v netgen  >/dev/null 2>&1 && echo "  netgen  found:   $(command -v netg
 command -v ngspice >/dev/null 2>&1 && echo "  ngspice found:   $(command -v ngspice)"
 command -v xschem  >/dev/null 2>&1 && echo "  xschem  found:   $(command -v xschem)"
 
-[ -n "$MAGIC_MAGICRC" ]      && echo "  MAGIC_MAGICRC     = $MAGIC_MAGICRC"
-[ -n "$NETGEN_SETUP" ]       && echo "  NETGEN_SETUP      = $NETGEN_SETUP"
+[ -n "$MAGIC_MAGICRC" ]              && echo "  MAGIC_MAGICRC              = $MAGIC_MAGICRC"
+[ -n "$NETGEN_SETUP" ]               && echo "  NETGEN_SETUP               = $NETGEN_SETUP"
 [ -n "$XSCHEM_SYSTEM_LIBRARY_PATH" ] && echo "  XSCHEM_SYSTEM_LIBRARY_PATH = $XSCHEM_SYSTEM_LIBRARY_PATH"
 [ -n "$XSCHEM_LIBRARY_PATH" ]        && echo "  XSCHEM_LIBRARY_PATH        = $XSCHEM_LIBRARY_PATH"
-[ -n "$XSCHEM_RC" ]          && echo "  XSCHEM_RC         = $XSCHEM_RC"
+[ -n "$XSCHEM_RC" ]                  && echo "  XSCHEM_RC                  = $XSCHEM_RC"

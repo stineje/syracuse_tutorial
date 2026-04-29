@@ -546,6 +546,13 @@ $OPEN_CIRCUITDESIGN_ROOT
     the corresponding \texttt{-dev} packages are present). Re-run
     \texttt{./configure} after installing them and rebuild.
 
+  \item[I do not see gf180mcu when sourcing \texttt{setup.sh}]
+    There seems to be some issue with the configure script which I
+    have not debugged yet.  My original mistake is I made a mistake in
+    the configure command line (i.e., typo).  The easiest solution is
+    to delete the \texttt{open\_pdks}). Then, re-run
+    \texttt{./configure} after installing them and rebuild.    
+
   \item[\texttt{open\_pdks} fails to find Magic / Netgen]
     Ensure \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/bin} is on \texttt{PATH}
     before running \texttt{./configure} (sourcing \texttt{setup.sh} does
