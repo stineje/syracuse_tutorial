@@ -9,8 +9,8 @@ x1 A Y VDD VSS gf180mcu_osu_sc_gp12t3v3__inv_1
 **** begin user architecture code
 
 
-.include $PDK_ROOT/gf180mcuC/libs.tech/ngspice/design.ngspice
-.library "$PDK_ROOT/gf180mcuC/libs.tech/ngspice/sm141064.ngspice" typical
+.include $PDK_ROOT/gf180mcuD/libs.tech/ngspice/design.ngspice
+.library "$PDK_ROOT/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" typical
 
 .control
 TRAN 0.1u 5u

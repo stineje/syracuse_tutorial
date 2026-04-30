@@ -45,7 +45,7 @@ class extlvs():
 				print(f'Current lvs file(s): {f}')
 				try:
 					print(f'Running LVS on {f.split(".")[0]}')
-					subout = subprocess.Popen([f'netgen -batch lvs \"{self.layout_path}{f} {f.split(".")[0]}\" \"{self.source_path}{f} {f.split(".")[0]}\" {self.pdk_root}/gf180mcuC/libs.tech/netgen/gf180mcuC_setup.tcl {f.split(".")[0]}.lvs.report'], shell=True) 
+					subout = subprocess.Popen([f'netgen -batch lvs \"{self.layout_path}{f} {f.split(".")[0]}\" \"{self.source_path}{f} {f.split(".")[0]}\" {self.pdk_root}/gf180mcuD/libs.tech/netgen/gf180mcuD_setup.tcl {f.split(".")[0]}.lvs.report'], shell=True) 
 					subout.wait()
 					mov = subprocess.Popen([f'mv comp.out {f.split(".")[0]}.lvs.txt'], shell=True)
 					mov.wait()

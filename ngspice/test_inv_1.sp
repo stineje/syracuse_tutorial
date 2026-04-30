@@ -5,7 +5,7 @@
 * Include GF180MCU device models
 ************************************
 * Update this path to match your local Open_PDKs installation.
-.include /home/jstine/opencircuitdesign/share/pdk/gf180mcuC/libs.tech/ngspice/design.ngspice
+.include /home/jstine/opencircuitdesign/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
 
 ************************************
 * Include extracted inverter netlist

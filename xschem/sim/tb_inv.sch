@@ -21,8 +21,8 @@ C {opin.sym} 620 -90 0 0 {name=p5 lab=Y}
 C {code.sym} 20 -160 0 0 {name=COMMAND 
 only_toplevel=false
 value="
-.include $PDK_ROOT/gf180mcuC/libs.tech/ngspice/design.ngspice
-.library \\"$PDK_ROOT/gf180mcuC/libs.tech/ngspice/sm141064.ngspice\\" typical
+.include $PDK_ROOT/gf180mcuD/libs.tech/ngspice/design.ngspice
+.library \\"$PDK_ROOT/gf180mcuD/libs.tech/ngspice/sm141064.ngspice\\" typical
 
 .control
 TRAN 0.1u 5u

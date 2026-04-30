@@ -3,7 +3,7 @@
 # setup_opencircuitdesign.sh
 #
 # Environment setup for Magic / Netgen / ngspice / xschem / irsim
-# plus open_pdks (gf180mcuC preferred, sky130A fallback) under: $HOME/ocd
+# plus open_pdks (gf180mcuD preferred, sky130A fallback) under: $HOME/ocd
 #
 # Author : James E. Stine <james.stine@okstate.edu>
 # Date   : 2026-04-29
@@ -83,16 +83,16 @@ fi
 # Priority order:
 #   1. PDK_PREFERENCE   -- if set in the environment before sourcing this
 #                          script, that PDK is used (e.g. PDK_PREFERENCE=sky130A)
-#   2. gf180mcuC        -- preferred default
+#   2. gf180mcuD        -- preferred default
 #   3. sky130A          -- fallback
 #
 # To force sky130A in a single shell:
 #     PDK_PREFERENCE=sky130A source setup.sh
 #
-PDK_PREFERENCE="${PDK_PREFERENCE:-gf180mcuC}"
+PDK_PREFERENCE="${PDK_PREFERENCE:-gf180mcuD}"
 
 _select_pdk() {
-    # $1 = PDK name, e.g. gf180mcuC or sky130A
+    # $1 = PDK name, e.g. gf180mcuD or sky130A
     local pdkname="$1"
     local pdkpath="$PDK_ROOT/$pdkname"
 
@@ -134,15 +134,15 @@ _select_pdk() {
 if [ -n "$PDK_ROOT" ]; then
     if _select_pdk "$PDK_PREFERENCE"; then
         :   # picked $PDK_PREFERENCE
-    elif [ "$PDK_PREFERENCE" != "gf180mcuC" ] && _select_pdk "gf180mcuC"; then
-        echo "NOTE: $PDK_PREFERENCE not installed; falling back to gf180mcuC."
+    elif [ "$PDK_PREFERENCE" != "gf180mcuD" ] && _select_pdk "gf180mcuD"; then
+        echo "NOTE: $PDK_PREFERENCE not installed; falling back to gf180mcuD."
     elif _select_pdk "sky130A"; then
         if [ "$PDK_PREFERENCE" != "sky130A" ]; then
             echo "NOTE: $PDK_PREFERENCE not installed; falling back to sky130A."
         fi
     else
-        echo "WARNING: Neither gf180mcuC nor sky130A found under $PDK_ROOT"
-        echo "         Looked for: $PDK_ROOT/$PDK_PREFERENCE, $PDK_ROOT/gf180mcuC, $PDK_ROOT/sky130A"
+        echo "WARNING: Neither gf180mcuD nor sky130A found under $PDK_ROOT"
+        echo "         Looked for: $PDK_ROOT/$PDK_PREFERENCE, $PDK_ROOT/gf180mcuD, $PDK_ROOT/sky130A"
     fi
 fi
 

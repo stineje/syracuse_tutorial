@@ -12,6 +12,6 @@ purge:
 	-@rm -rf *_lvs*
 
 lvs: 
-	python3 extlvs.py --move -s ../lib/xschem/${DESIGN_TRACK}/spice/ -l ../lib/${DESIGN_TRACK}/ngspice/ 
+	python3 extlvs.py --move -s ../xschem/ -l ../magic/ngspice/ 
 	rm -rf ${DESIGN_TRACK}_lvs
 	mv -f lvs/ ${DESIGN_TRACK}_lvs/

@@ -480,7 +480,7 @@ and export \texttt{PDK}, \texttt{SKY130A}, \texttt{MAGIC\_MAGICRC},
 source /path/to/repo/setup.sh
 
 ls "$PDK_ROOT"
-# Expect: sky130A  sky130B  gf180mcuA  gf180mcuB  gf180mcuC  gf180mcuD  ...
+# Expect: sky130A  sky130B  gf180mcuA  gf180mcuB  gf180mcuD  gf180mcuD  ...
 
 # setup.sh should now report sky130A as the selected PDK:
 echo "$PDK"           # -> sky130A
@@ -544,7 +544,7 @@ echo "source $HOME/gf180mcu-open-source-vlsi/instructions-setup/setup.sh" \
 \subsection{Verify the tutorial environment}
 
 After sourcing, the script prints a summary. Confirm that
-\texttt{PDK\,=\,gf180mcuC} (or whatever variant you have installed) and
+\texttt{PDK\,=\,gf180mcuD} (or whatever variant you have installed) and
 that \texttt{magic}, \texttt{netgen}, \texttt{ngspice}, and
 \texttt{xschem} all resolve under \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/bin}.
 If \texttt{PDK} reports \texttt{sky130A} instead of a gf180mcu variant,
@@ -683,7 +683,7 @@ stack are painful (or impossible without WSL). The recommended
 alternative is the \textbf{IIC-OSIC-TOOLS} Docker container from the
 Institute for Integrated Circuits at TU Wien, which bundles Magic,
 Netgen, IRSIM, xschem, ngspice, KLayout, OpenROAD, yosys, and a
-pre-installed PDK set (sky130A, gf180mcuC, etc.) into a single image.
+pre-installed PDK set (sky130A, gf180mcuD, etc.) into a single image.
 Repository: \url{https://github.com/iic-jku/iic-osic-tools}.
 
 This appendix covers running the container on macOS and Windows. Linux
@@ -763,7 +763,7 @@ http://localhost:8888/vnc.html?autoconnect=true&resize=remote
 Open that URL in any browser. You will land on a full XFCE desktop with
 Magic, xschem, KLayout, ngspice, Netgen, and IRSIM all installed. PDKs
 are at \texttt{/foss/pdks/} inside the container ---
-\texttt{sky130A}, \texttt{gf180mcuC}, etc.
+\texttt{sky130A}, \texttt{gf180mcuD}, etc.
 
 \subsection{Mounting your work into the container}
 
@@ -799,7 +799,7 @@ cd gf180mcu-open-source-vlsi
 git checkout ieee_chipathon
 
 export PDK_ROOT=/foss/pdks
-export PDK=gf180mcuC
+export PDK=gf180mcuD
 magic -rcfile $PDK_ROOT/$PDK/libs.tech/magic/$PDK.magicrc
 \end{lstlisting}
 

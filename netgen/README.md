@@ -1,6 +1,6 @@
 To run netgen, please use the following nomenclature:
 ```bash
-netgen -batch lvs "../magic/$1.spice $1" "../xschem/$1.spice $1" $PDK_ROOT/gf180mcuC/libs.tech/netgen/gf180mcuC_setup.tcl $1.out
+netgen -batch lvs "../magic/ngspice/$1.spice $1" "../xschem/$1.spice $1" $PDK_ROOT/gf180mcuD/libs.tech/netgen/gf180mcuD_setup.tcl $1.out
 ```
 
 Or this can be accomplished by running the runNetgen.bash script:

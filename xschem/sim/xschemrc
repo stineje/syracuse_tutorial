@@ -31,7 +31,7 @@ set XSCHEM_LIBRARY_PATH {}
 append XSCHEM_LIBRARY_PATH :${XSCHEM_SHAREDIR}/xschem_library/devices
 append XSCHEM_LIBRARY_PATH :${XSCHEM_SHAREDIR}/xschem_library
 append XSCHEM_LIBRARY_PATH :$env(PWD)
-append XSCHEM_LIBRARY_PATH :$env(PDK_ROOT)/gf180mcuC/libs.tech/xschem
+append XSCHEM_LIBRARY_PATH :$env(PDK_ROOT)/gf180mcuD/libs.tech/xschem
 # append XSCHEM_LIBRARY_PATH :/mnt/sda7/home/schippes/pdks/sky130A/libs.tech/xschem
 #### add ~/.xschem/xschem_library (USER_CONF_DIR is normally ~/.xschem)
 append XSCHEM_LIBRARY_PATH :$USER_CONF_DIR/xschem_library 
@@ -330,15 +330,15 @@ if { [info exists env(PDK_ROOT)] && $env(PDK_ROOT) ne {} } {
 }
 
 if {[info exists PDK_ROOT]} {
-  set 180MCU_MODELS ${PDK_ROOT}/gf180mcuC/libs.tech/ngspice
+  set 180MCU_MODELS ${PDK_ROOT}/gf180mcuD/libs.tech/ngspice
   puts stderr "pdk installation: using $PDK_ROOT"
   puts stderr "180MCU_MODELS: $180MCU_MODELS"
 }
 
 # open_pdks-specific
-set XSCHEM_START_WINDOW ${PDK_ROOT}/gf180mcuC/libs.tech/xschem/tests/0_top.sch
-append XSCHEM_LIBRARY_PATH :${PDK_ROOT}/gf180mcuC/libs.tech/xschem/tests
-append XSCHEM_LIBRARY_PATH :${PDK_ROOT}/gf180mcuC/libs.tech/xschem
+set XSCHEM_START_WINDOW ${PDK_ROOT}/gf180mcuD/libs.tech/xschem/tests/0_top.sch
+append XSCHEM_LIBRARY_PATH :${PDK_ROOT}/gf180mcuD/libs.tech/xschem/tests
+append XSCHEM_LIBRARY_PATH :${PDK_ROOT}/gf180mcuD/libs.tech/xschem
 
 # allow a user-specific path add-on
 if { [info exists ::env(XSCHEM_USER_LIBRARY_PATH) ] } {
