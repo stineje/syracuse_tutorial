@@ -1,16 +1,13 @@
 #!/usr/bin/env bash
-# -----------------------------------------------------------------------------
+#
 # setup_opencircuitdesign.sh
-#
 # Environment setup for Magic / Netgen / ngspice / xschem / irsim
-# plus open_pdks (gf180mcuD preferred, sky130A fallback) under: $HOME/ocd
+# plus open_pdks under:  $HOME/ocd
 #
-# Author : James E. Stine <james.stine@okstate.edu>
-# Date   : 2026-04-29
+# Default PDK selection:
+#   1. gf180mcuD (preferred if installed)
+#   2. sky130A   (fallback)
 #
-# Usage  : source setup.sh
-#          PDK_PREFERENCE=sky130A source setup.sh    # override default PDK
-# -----------------------------------------------------------------------------
 
 # -------------------------------------------------------------------
 # Root of your OpenCircuitDesign install
@@ -45,7 +42,7 @@ fi
 # PDK_ROOT for open_pdks
 # -------------------------------------------------------------------
 # This is the standard install location for open_pdks when configured
-# with --prefix=$OPEN_CIRCUITDESIGN_ROOT (PDKs land in $prefix/share/pdk).
+# with --with-pdk_root=$OPEN_CIRCUITDESIGN_ROOT/share/pdk
 #
 if [ -d "$OPEN_CIRCUITDESIGN_ROOT/share/pdk" ]; then
     export PDK_ROOT="$OPEN_CIRCUITDESIGN_ROOT/share/pdk"
@@ -78,75 +75,60 @@ if [ -d "$OPEN_CIRCUITDESIGN_ROOT/share/netgen" ]; then
 fi
 
 # -------------------------------------------------------------------
-# Active PDK selection
+# PDK selection: prefer gf180mcuD, fall back to sky130A
 # -------------------------------------------------------------------
-# Priority order:
-#   1. PDK_PREFERENCE   -- if set in the environment before sourcing this
-#                          script, that PDK is used (e.g. PDK_PREFERENCE=sky130A)
-#   2. gf180mcuD        -- preferred default
-#   3. sky130A          -- fallback
 #
-# To force sky130A in a single shell:
-#     PDK_PREFERENCE=sky130A source setup.sh
+# Helper that wires up env vars for whichever PDK we picked.
+# Args:
+#   $1 = PDK name (e.g. gf180mcuD or sky130A)
+#   $2 = PDK directory (e.g. $PDK_ROOT/gf180mcuD)
 #
-PDK_PREFERENCE="${PDK_PREFERENCE:-gf180mcuD}"
+_ocd_setup_pdk() {
+    local pdk_name="$1"
+    local pdk_dir="$2"
 
-_select_pdk() {
-    # $1 = PDK name, e.g. gf180mcuD or sky130A
-    local pdkname="$1"
-    local pdkpath="$PDK_ROOT/$pdkname"
+    export PDK="$pdk_name"
 
-    [ -d "$pdkpath" ] || return 1
+    # Also export a name-specific variable, matching open_pdks/SKY130A convention
+    # (e.g. SKY130A=..., GF180MCUD=...)
+    local upname
+    upname="$(echo "$pdk_name" | tr '[:lower:]' '[:upper:]')"
+    export "$upname=$pdk_dir"
 
-    export PDK="$pdkname"
-
-    # Convenience var matching the PDK name (e.g. GF180MCU_C, SKY130A).
-    # Uppercase, '-' -> '_'.
-    local varname
-    varname="$(echo "$pdkname" | tr '[:lower:]-' '[:upper:]_')"
-    export "$varname=$pdkpath"
-
-    # Magic: tech / rc file
-    if [ -f "$pdkpath/libs.tech/magic/${pdkname}.magicrc" ]; then
-        export MAGIC_MAGICRC="$pdkpath/libs.tech/magic/${pdkname}.magicrc"
+    # Magic: tech file / rc
+    if [ -f "$pdk_dir/libs.tech/magic/${pdk_name}.magicrc" ]; then
+        export MAGIC_MAGICRC="$pdk_dir/libs.tech/magic/${pdk_name}.magicrc"
     fi
 
     # Netgen: LVS setup
-    if [ -f "$pdkpath/libs.tech/netgen/${pdkname}_setup.tcl" ]; then
-        export NETGEN_SETUP="$pdkpath/libs.tech/netgen/${pdkname}_setup.tcl"
+    if [ -f "$pdk_dir/libs.tech/netgen/${pdk_name}_setup.tcl" ]; then
+        export NETGEN_SETUP="$pdk_dir/libs.tech/netgen/${pdk_name}_setup.tcl"
     fi
 
-    # xschem: PDK libraries + rc (prepend so PDK libs win over any system libs)
-    if [ -d "$pdkpath/libs.tech/xschem" ]; then
+    # xschem: PDK-specific libraries + rc
+    if [ -d "$pdk_dir/libs.tech/xschem" ]; then
         if [ -z "$XSCHEM_LIBRARY_PATH" ]; then
-            export XSCHEM_LIBRARY_PATH="$pdkpath/libs.tech/xschem"
+            export XSCHEM_LIBRARY_PATH="$pdk_dir/libs.tech/xschem"
         else
-            export XSCHEM_LIBRARY_PATH="$pdkpath/libs.tech/xschem:$XSCHEM_LIBRARY_PATH"
+            export XSCHEM_LIBRARY_PATH="$pdk_dir/libs.tech/xschem:$XSCHEM_LIBRARY_PATH"
         fi
 
-        if [ -f "$pdkpath/libs.tech/xschem/xschemrc" ]; then
-            export XSCHEM_RC="$pdkpath/libs.tech/xschem/xschemrc"
+        if [ -f "$pdk_dir/libs.tech/xschem/xschemrc" ]; then
+            export XSCHEM_RC="$pdk_dir/libs.tech/xschem/xschemrc"
         fi
     fi
-    return 0
 }
 
 if [ -n "$PDK_ROOT" ]; then
-    if _select_pdk "$PDK_PREFERENCE"; then
-        :   # picked $PDK_PREFERENCE
-    elif [ "$PDK_PREFERENCE" != "gf180mcuD" ] && _select_pdk "gf180mcuD"; then
-        echo "NOTE: $PDK_PREFERENCE not installed; falling back to gf180mcuD."
-    elif _select_pdk "sky130A"; then
-        if [ "$PDK_PREFERENCE" != "sky130A" ]; then
-            echo "NOTE: $PDK_PREFERENCE not installed; falling back to sky130A."
-        fi
+    if [ -d "$PDK_ROOT/gf180mcuD" ]; then
+        _ocd_setup_pdk "gf180mcuD" "$PDK_ROOT/gf180mcuD"
+    elif [ -d "$PDK_ROOT/sky130A" ]; then
+        _ocd_setup_pdk "sky130A" "$PDK_ROOT/sky130A"
     else
-        echo "WARNING: Neither gf180mcuD nor sky130A found under $PDK_ROOT"
-        echo "         Looked for: $PDK_ROOT/$PDK_PREFERENCE, $PDK_ROOT/gf180mcuD, $PDK_ROOT/sky130A"
+        echo "WARNING: Neither $PDK_ROOT/gf180mcuD nor $PDK_ROOT/sky130A found"
+        echo "         – no PDK selected. Did open_pdks finish installing?"
     fi
 fi
-
-unset -f _select_pdk
 
 # -------------------------------------------------------------------
 # Convenience: show what we just did
