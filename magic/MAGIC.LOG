@@ -1,9 +1,11 @@
 
-Magic 8.3 revision 638 - Compiled on Wed Apr 29 11:24:55 AM CDT 2026.
+Magic 8.3 revision 610 - Compiled on Fri Feb 27 11:13:41 AM CST 2026.
 Starting magic under Tcl interpreter
 Using the terminal as the console.
+WARNING: RLIMIT_NOFILE is above 1024 and Tcl_Version<9 this may cause runtime issues [rlim_cur=1048576]
 Using NULL graphics device.
 Processing system .magicrc file
+{}
 Switching to WIRING tool.
 Switching to NETLIST tool.
 Switching to PICK tool.
@@ -17,9 +19,8 @@ Switching to WIRING tool.
 Switching to NETLIST tool.
 Switching to PICK tool.
 Switching to BOX tool.
-Loading "gf180mcu_osu_sc_gp12t3v3__inv_1" from command line.
+Loading "./gf180mcu_osu_sc_gp12t3v3__inv_1" from command line.
 Cell gf180mcu_osu_sc_gp12t3v3__inv_1 read from current working directory
-Using technology "gf180mcuD", version 1.0.582-0-gd815bb3
+Using technology "gf180mcuD", version 1.0.575-0-ga1e16e9
 Extracting gf180mcu_osu_sc_gp12t3v3__inv_1 into gf180mcu_osu_sc_gp12t3v3__inv_1.ext:
-The cap accuracy flag 'y' is deprecated.
 exttospice finished.

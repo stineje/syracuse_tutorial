@@ -5,7 +5,8 @@
 * Include GF180MCU device models
 ************************************
 * Update this path to match your local Open_PDKs installation.
-.include /home/jstine/opencircuitdesign/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
+.include $PDK_ROOT/gf180mcuD/libs.tech/ngspice/design.ngspice
+.library "$PDK_ROOT/gf180mcuD/libs.tech/ngspice/sm141064.ngspice" typical
 
 ************************************
 * Include extracted inverter netlist
@@ -48,12 +49,12 @@ run
 plot v(a) v(y)
 
 * Measure propagation delays at 50 percent VDD
-meas tran tphl TRIG v(a) VAL='VDDVAL/2' RISE=1 TARG v(y) VAL='VDDVAL/2' FALL=1
-meas tran tplh TRIG v(a) VAL='VDDVAL/2' FALL=1 TARG v(y) VAL='VDDVAL/2' RISE=1
+* meas tran tphl TRIG v(a) VAL='VDDVAL/2' RISE=1 TARG v(y) VAL='VDDVAL/2' FALL=1
+* meas tran tplh TRIG v(a) VAL='VDDVAL/2' FALL=1 TARG v(y) VAL='VDDVAL/2' RISE=1
 
 * Measure average delay
-let tpd = (tphl + tplh)/2
-print tphl tplh tpd
+* let tpd = (tphl + tplh)/2
+* print tphl tplh tpd
 
 .endc
 
