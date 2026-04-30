@@ -59,19 +59,19 @@
 
 This guide walks through building and installing the open-source analog/digital
 IC design flow maintained primarily by Tim Edwards into a self-contained user
-prefix. The default location used throughout this document is
-
+prefix.  
+The default location used throughout this document is
 \begin{lstlisting}
-$HOME/opencircuitdesign
+$HOME/ocd
 \end{lstlisting}
 
 \noindent which matches the default \texttt{OPEN\_CIRCUITDESIGN\_ROOT} value
 in the included \texttt{setup.sh}. If you would rather install elsewhere
-(e.g.\ \texttt{/opt/opencircuitdesign} or \texttt{/home/user/ocd}), simply
+(e.g.\ \texttt{/opt/ocd} or \texttt{/home/user/ocd}), simply
 edit the line near the top of \texttt{setup.sh}:
 
 \begin{lstlisting}
-export OPEN_CIRCUITDESIGN_ROOT="$HOME/opencircuitdesign"
+export OPEN_CIRCUITDESIGN_ROOT="$HOME/ocd"
 \end{lstlisting}
 
 \noindent and use that same path everywhere this guide writes
@@ -106,6 +106,26 @@ $OPEN_CIRCUITDESIGN_ROOT
 |-- share/      # PDKs, scripts, technology files, magic/netgen/xschem libs
 |-- include/    # development headers
 \end{lstlisting}
+
+\subsection*{Not sure where to start? Try the container first!}
+ 
+Building this whole stack from source is rewarding, but it is also a lot
+--- compilers, X11 libraries, Tcl/Tk versions, autotools, and a few hours
+of patience. If any of that sounds intimidating, or if you are on macOS
+or Windows, or you simply want to start designing circuits \emph{today}
+rather than tomorrow, please skip ahead to
+Appendix~\ref{app:container}. The IIC-OSIC-TOOLS Docker container ships
+Magic, Netgen, IRSIM, ngspice, xschem, sky130A, gf180mcuD, and friends
+all pre-installed and pre-wired together. You will be up and running in
+the time it takes to download the image --- no build errors, no missing
+libraries, no late nights chasing a Tcl header.
+ 
+You can always come back and do the source build later once you are
+comfortable with the tools. There is no wrong choice here: the container
+gets you to circuit design fastest, the source build gives you the most
+control, and both run the same software underneath. Pick whichever fits
+where you are right now, and don't hesitate to ask for help if you get
+stuck --- the open-source EDA community is genuinely happy to have you.
 
 \section{Prerequisites}
 
@@ -157,12 +177,12 @@ sudo dnf install -y \
 \subsection{Create the install prefix and source directories}
 
 Pick the install root once and use it throughout. The default in
-\texttt{setup.sh} is \texttt{\$HOME/opencircuitdesign}; set it in your shell
+\texttt{setup.sh} is \texttt{\$HOME/ocd}; set it in your shell
 \emph{first} so the build commands below pick it up:
 
 \begin{lstlisting}
 # Match the value in setup.sh (edit setup.sh first if you want a different path)
-export OPEN_CIRCUITDESIGN_ROOT="$HOME/opencircuitdesign"
+export OPEN_CIRCUITDESIGN_ROOT="$HOME/ocd"
 
 mkdir -p "$OPEN_CIRCUITDESIGN_ROOT"   # source trees clone in here directly
 cd "$OPEN_CIRCUITDESIGN_ROOT"
