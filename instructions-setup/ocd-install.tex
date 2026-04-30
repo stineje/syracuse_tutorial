@@ -481,17 +481,15 @@ make install
 \subsubsection*{gf180mcu PDK}
 
 Once the sky130 install completes, configure and build the gf180mcu PDK.
-This pulls in the base gf180mcu PDK along with the Avalon standard-cell
-library (\texttt{-{}-enable-avalon-sc-gf180mcu}), the OCD I/O library
-(\texttt{-{}-enable-ocd-io-gf180mcu}), and the OCD SRAM macros
-(\texttt{-{}-enable-ocd-sram-gf180mcu}).
+This pulls in the base gf180mcu PDK along with the OSU standard-cell
+library (\texttt{-{}-enable-osu-sc-gf180mcu}), and the OCD I/O library
+(\texttt{-{}-enable-ocd-io-gf180mcu}).
 
 \begin{lstlisting}
 ./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT" \
             --enable-gf180mcu-pdk \
-            --enable-avalon-sc-gf180mcu \
-            --enable-ocd-io-gf180mcu \
-            --enable-ocd-sram-gf180mcu
+            --enable-osu-sc-gf180mcu \
+            --enable-ocd-io-gf180mcu 
 make
 make install
 \end{lstlisting}
