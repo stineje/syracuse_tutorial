@@ -16,7 +16,7 @@
 ************************************
 * Power supplies
 ************************************
-.param VDDVAL=3.3
+.param VDDVAL=3.3V
 
 VDD vdd 0 DC {VDDVAL}
 VSS vss 0 DC 0
@@ -48,13 +48,16 @@ run
 * Plot input and output
 plot v(a) v(y)
 
+let VDDVAL = 3.3
+let vdd_val = VDDVAL/2
+
 * Measure propagation delays at 50 percent VDD
-* meas tran tphl TRIG v(a) VAL='VDDVAL/2' RISE=1 TARG v(y) VAL='VDDVAL/2' FALL=1
-* meas tran tplh TRIG v(a) VAL='VDDVAL/2' FALL=1 TARG v(y) VAL='VDDVAL/2' RISE=1
+meas TRAN tphl TRIG v(a) VAL=vdd_val rise=1 TARG v(y) VAL=vdd_val fall=1
+meas TRAN tplh TRIG v(a) VAL=vdd_val fall=1 TARG v(y) VAL=vdd_val rise=1
 
 * Measure average delay
-* let tpd = (tphl + tplh)/2
-* print tphl tplh tpd
+let tpd = (tphl + tplh) / 2
+print tphl tplh tpd
 
 .endc
 
