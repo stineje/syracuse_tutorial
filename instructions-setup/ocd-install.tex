@@ -434,41 +434,77 @@ which magic netgen ngspice xschem
 
 With just \texttt{-{}-prefix}, \texttt{open\_pdks} installs the PDKs under
 \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/share/pdk}, which is exactly where
-\texttt{setup.sh} points \texttt{PDK\_ROOT}. The
-\texttt{-{}-enable-sram-sky130}, \texttt{-{}-enable-sram-space-sky130}, and
-\texttt{-{}-enable-reram-sky130} flags pull in the OpenRAM SRAM macros, the
-SRAM space variant, and the ReRAM macros, respectively. Magic, Netgen, and
-ngspice are auto-detected from \texttt{PATH}, so the explicit
+\texttt{setup.sh} points \texttt{PDK\_ROOT}. Magic, Netgen, and ngspice
+are auto-detected from \texttt{PATH}, so the explicit
 \texttt{-{}-with-magic=}, \texttt{-{}-with-netgen=}, and
 \texttt{-{}-with-ngspice=} flags are unnecessary as long as you sourced
 \texttt{setup.sh} (or otherwise put \texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/bin}
 on \texttt{PATH}) before running \texttt{configure}.
 
+\textbf{Important:} the sky130 and gf180mcu PDKs must be configured and
+installed \emph{separately} --- run \texttt{configure}, \texttt{make}, and
+\texttt{make install} for one PDK before moving on to the other. Do not
+combine both \texttt{-{}-enable-*-pdk} flags in a single \texttt{configure}
+invocation.
+
+Start by cloning \texttt{open\_pdks}:
+
 \begin{lstlisting}
 cd "$OPEN_CIRCUITDESIGN_ROOT"
 git clone https://github.com/RTimothyEdwards/open_pdks.git
 cd open_pdks
+\end{lstlisting}
 
+\subsubsection*{sky130 PDK}
+
+The sky130 \texttt{configure} pulls in the base sky130 PDK along with the
+OpenRAM SRAM macros (\texttt{-{}-enable-sram-sky130}), the SRAM space
+variant (\texttt{-{}-enable-sram-space-sky130}), the ReRAM macros
+(\texttt{-{}-enable-reram-sky130}), and the OSU standard-cell libraries at
+the 12T, 15T, and 18T track heights
+(\texttt{-{}-enable-osu-t12-sky130}, \texttt{-{}-enable-osu-t15-sky130},
+\texttt{-{}-enable-osu-t18-sky130}).
+
+\begin{lstlisting}
 ./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT" \
             --enable-sky130-pdk \
             --enable-sram-sky130 \
+            --enable-osu-t12-sky130 \
+            --enable-osu-t15-sky130 \
+            --enable-osu-t18-sky130 \
             --enable-sram-space-sky130 \
-            --enable-reram-sky130 \
-            --enable-gf180mcu-pdk
-\end{lstlisting}
-
-The \texttt{--enable-*-pdk} flags select which PDKs to fetch. Drop any you
-don't need; each PDK is several gigabytes after install.
-
-\subsection{Install (this step is long --- expect 30--90 minutes)}
-
-\begin{lstlisting}
+            --enable-reram-sky130
 make
 make install
 \end{lstlisting}
 
-The PDKs land under \texttt{\$PDK\_ROOT}, e.g.
-\texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/share/pdk/sky130A}. Once
+\subsubsection*{gf180mcu PDK}
+
+Once the sky130 install completes, configure and build the gf180mcu PDK.
+This pulls in the base gf180mcu PDK along with the Avalon standard-cell
+library (\texttt{-{}-enable-avalon-sc-gf180mcu}), the OCD I/O library
+(\texttt{-{}-enable-ocd-io-gf180mcu}), and the OCD SRAM macros
+(\texttt{-{}-enable-ocd-sram-gf180mcu}).
+
+\begin{lstlisting}
+./configure --prefix="$OPEN_CIRCUITDESIGN_ROOT" \
+            --enable-gf180mcu-pdk \
+            --enable-avalon-sc-gf180mcu \
+            --enable-ocd-io-gf180mcu \
+            --enable-ocd-sram-gf180mcu
+make
+make install
+\end{lstlisting}
+
+The \texttt{--enable-*-pdk} flags select which PDK to fetch on each pass.
+Drop any sub-options you don't need; each PDK is several gigabytes after
+install.
+
+\subsection{Install notes (each PDK takes 30--90 minutes)}
+
+The PDKs land under \texttt{\$PDK\_ROOT}, e.g.\
+\texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/share/pdk/sky130A} and
+\texttt{\$OPEN\_CIRCUITDESIGN\_ROOT/share/pdk/gf180mcuD}. Once
 \texttt{sky130A} exists, sourcing \texttt{setup.sh} again will pick it up
 and export \texttt{PDK}, \texttt{SKY130A}, \texttt{MAGIC\_MAGICRC},
 \texttt{NETGEN\_SETUP}, \texttt{XSCHEM\_LIBRARY\_PATH}, and
