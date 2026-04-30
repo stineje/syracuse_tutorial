@@ -2,6 +2,7 @@
 
 \usepackage[margin=1in]{geometry}
 \usepackage{xcolor}
+\usepackage{graphicx}
 \usepackage{listings}
 \usepackage{hyperref}
 \usepackage{booktabs}
@@ -757,11 +758,21 @@ PowerShell as administrator and run:
 wsl --install
 \end{lstlisting}
 
-\noindent then reboot. After install, launch Docker Desktop once.
+\noindent then reboot. After install, launch Docker Desktop once.  If
+you run the docker, you should get the following screen in
+Figure~\ref{docker-fig.png}:
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.5]{docker.png}
+  \caption{Docker Screen running on MacOS}
+  \label{docker-fig.png}
+\end{figure}
 
 \textbf{Both platforms:} you will run shell commands. On macOS, open the
 \textbf{Terminal} app (Spotlight: \texttt{Cmd+Space}, type
-\texttt{Terminal}). On Windows, open the WSL Ubuntu terminal (Start
+\texttt{Terminal}).  The terminal item should be at the bottom
+right-hand corner of the docker screen.
+On Windows, open the WSL Ubuntu terminal (Start
 menu) or use Docker Desktop's built-in shell (the \texttt{>\_} icon at
 the bottom of the Docker Desktop window). Verify Docker is reachable:
 
@@ -816,6 +827,14 @@ Open that URL in any browser. You will land on a full XFCE desktop with
 Magic, xschem, KLayout, ngspice, Netgen, and IRSIM all installed. PDKs
 are at \texttt{/foss/pdks/} inside the container ---
 \texttt{sky130A}, \texttt{gf180mcuD}, etc.
+Figure~\ref{iic-osic-fig.png} shows the screen that you should use for
+your tools.
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.5]{iic-osic.png}
+  \caption{IIC-OSIC Screen running on MacOS Docker}
+  \label{iic-osic-fig.png}
+\end{figure}
 
 \subsection{Mounting your work into the container}
 
