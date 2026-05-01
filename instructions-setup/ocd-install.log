@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.29)  1 MAY 2026 09:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.9.29)  1 MAY 2026 09:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -87,6 +87,10 @@ Package graphics Info: Driver file: pdftex.def on input line 107.
 )
 \Gin@req@height=\dimen149
 \Gin@req@width=\dimen150
+)
+(/usr/share/texlive/texmf-dist/tex/latex/seqsplit/seqsplit.sty
+Package: seqsplit 2006/08/07 v0.1 Splitting long sequences (DNA, RNA, proteins,
+ etc.) 
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
 \lst@mode=\count198
@@ -294,7 +298,7 @@ Package: titlesec 2023/10/27 v2.16 Sectioning titles
 \titlewidthlast=\dimen176
 \titlewidthfirst=\dimen177
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 19.
+Package hyperref Info: Option `colorlinks' set `true' on input line 20.
 
 (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
@@ -304,24 +308,24 @@ File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
 (./ocd-install.aux)
 \openout1 = `ocd-install.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -380,32 +384,32 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \c@lstlisting=\count297
-Package hyperref Info: Link coloring ON on input line 57.
+Package hyperref Info: Link coloring ON on input line 58.
 
 (./ocd-install.out) (./ocd-install.out)
 \@outlinefile=\write3
 \openout3 = `ocd-install.out'.
 
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 59.
+(Font)              <12> on input line 60.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 59.
+(Font)              <8> on input line 60.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 59.
+(Font)              <6> on input line 60.
 LaTeX Font Info:    Trying to load font information for TS1+cmtt on input line 
-67.
+68.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmtt.fd
 File: ts1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <9> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 76.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 77.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 85.
+(Font)              <10.95> on input line 86.
  [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (4.53194pt too wide) in paragraph at lines 156--159
+Overfull \hbox (4.53194pt too wide) in paragraph at lines 157--160
 \OT1/cmr/m/n/10.95 The last three lines be-yond the orig-i-nal toolchain bring 
 in xschem-specific de-pen-den-cies (\OT1/cmtt/m/n/10.95 libxrender\OT1/cmr/m/n/
 10.95 ,
@@ -413,16 +417,16 @@ in xschem-specific de-pen-den-cies (\OT1/cmtt/m/n/10.95 libxrender\OT1/cmr/m/n/
 
 [2]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <12> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 193.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 194.
 
-Overfull \hbox (67.85289pt too wide) in paragraph at lines 195--201
+Overfull \hbox (67.85289pt too wide) in paragraph at lines 196--202
 \OT1/cmr/m/n/10.95 ables, the repos-i-tory ships a \OT1/cmtt/m/n/10.95 setup.sh
  \OT1/cmr/m/n/10.95 script that han-dles all of it. Af-ter con-firm-ing the \OT
 1/cmtt/m/n/10.95 OPEN[]CIRCUITDESIGN[]ROOT
  []
 
 
-Overfull \hbox (57.89632pt too wide) in paragraph at lines 222--224
+Overfull \hbox (57.89632pt too wide) in paragraph at lines 223--225
 []\OT1/cmr/m/n/10.95 Exports per-tool vari-ables: \OT1/cmtt/m/n/10.95 MAGIC[]HO
 ME\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 NETGEN[]HOME\OT1/cmr/m/n/10.95 , \OT
 1/cmtt/m/n/10.95 NGSPICE[]SHARE[]DIR\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 XS
@@ -430,7 +434,7 @@ CHEM[]SYSTEM[]LIBRARY[]PATH\OT1/cmr/m/n/10.95 .
  []
 
 [3] [4]
-Overfull \hbox (52.66176pt too wide) in paragraph at lines 366--370
+Overfull \hbox (52.66176pt too wide) in paragraph at lines 367--371
 []\OT1/cmr/bx/n/10.95 Debian / Ubuntu: \OT1/cmtt/m/n/10.95 libxaw7-dev\OT1/cmr/
 m/n/10.95 , \OT1/cmtt/m/n/10.95 libxrender-dev\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/
 n/10.95 libxcb-render0-dev\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 libxcb-rende
@@ -438,21 +442,21 @@ r-util0-dev\OT1/cmr/m/n/10.95 ,
  []
 
 [5]
-Overfull \hbox (44.52815pt too wide) in paragraph at lines 391--396
+Overfull \hbox (44.52815pt too wide) in paragraph at lines 392--397
 []\OT1/cmr/m/n/10.95 If you need translu-cent rect-an-gle / fill ren-der-ing, e
 n-sure the XCB ren-der pack-ages (\OT1/cmtt/m/n/10.95 libxcb-render0-dev\OT1/cm
 r/m/n/10.95 ,
  []
 
 [6]
-Overfull \hbox (12.9533pt too wide) in paragraph at lines 482--489
+Overfull \hbox (12.9533pt too wide) in paragraph at lines 483--490
 \OT1/cmr/m/n/10.95 track heights (\OT1/cmtt/m/n/10.95 --enable-osu-t12-sky130\O
 T1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 --enable-osu-t15-sky130\OT1/cmr/m/n/10.9
 5 , \OT1/cmtt/m/n/10.95 --enable-osu-t18-sky130\OT1/cmr/m/n/10.95 ). 
  []
 
 [7]
-Overfull \hbox (223.26643pt too wide) in paragraph at lines 525--532
+Overfull \hbox (223.26643pt too wide) in paragraph at lines 526--533
 \OT1/cmr/m/n/10.95 The PDKs land un-der \TS1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.9
 5 PDK[]ROOT\OT1/cmr/m/n/10.95 , e.g. \TS1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.95 O
 PEN[]CIRCUITDESIGN[]ROOT/share/pdk/sky130A \OT1/cmr/m/n/10.95 and \TS1/cmtt/m/n
@@ -461,7 +465,7 @@ mr/m/n/10.95 .
  []
 
 
-Overfull \hbox (14.47755pt too wide) in paragraph at lines 525--532
+Overfull \hbox (14.47755pt too wide) in paragraph at lines 526--533
 \OT1/cmr/m/n/10.95 Once \OT1/cmtt/m/n/10.95 sky130A \OT1/cmr/m/n/10.95 ex-ists,
  sourc-ing \OT1/cmtt/m/n/10.95 setup.sh \OT1/cmr/m/n/10.95 again will pick it u
 p and ex-port \OT1/cmtt/m/n/10.95 PDK\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 S
@@ -470,14 +474,14 @@ KY130A\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 MAGIC[]MAGICRC\OT1/cmr/m/n/10.95
  []
 
 
-Overfull \hbox (24.52507pt too wide) in paragraph at lines 566--569
+Overfull \hbox (24.52507pt too wide) in paragraph at lines 567--570
 \OT1/cmr/m/n/10.95 Pick any di-rec-tory you like for tu-to-rial work --- it doe
 s \OT1/cmr/m/it/10.95 not \OT1/cmr/m/n/10.95 need to live un-der \TS1/cmtt/m/n/
 10.95 $\OT1/cmtt/m/n/10.95 OPEN[]CIRCUITDESIGN[]ROOT\OT1/cmr/m/n/10.95 .
  []
 
 [8]
-Overfull \hbox (60.68411pt too wide) in paragraph at lines 601--608
+Overfull \hbox (60.68411pt too wide) in paragraph at lines 602--609
 \OT1/cmr/m/n/10.95 have in-stalled) and that \OT1/cmtt/m/n/10.95 magic\OT1/cmr/
 m/n/10.95 , \OT1/cmtt/m/n/10.95 netgen\OT1/cmr/m/n/10.95 , \OT1/cmtt/m/n/10.95 
 ngspice\OT1/cmr/m/n/10.95 , and \OT1/cmtt/m/n/10.95 xschem \OT1/cmr/m/n/10.95 a
@@ -488,17 +492,17 @@ ll re-solve un-der \TS1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.95 OPEN[]CIRCUITDESIGN
 [9]
 
 Package enumitem Warning: Negative labelwidth. This does not make much
-(enumitem)                sense, on input line 667.
+(enumitem)                sense, on input line 668.
 
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 668.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 669.
 
 LaTeX Font Warning: Font shape `TS1/cmtt/bx/n' undefined
 (Font)              using `TS1/cmtt/m/n' instead
-(Font)              for symbol `textdollar' on input line 668.
+(Font)              for symbol `textdollar' on input line 669.
 
 
-Overfull \hbox (98.93887pt too wide) in paragraph at lines 669--673
+Overfull \hbox (98.93887pt too wide) in paragraph at lines 670--674
 \OT1/cmtt/m/n/10.95 setup.sh \OT1/cmr/m/n/10.95 aborts when its tar-get pre-fix
  is miss-ing. Ei-ther cre-ate the di-rec-tory (\OT1/cmtt/m/n/10.95 mkdir -p "\T
 S1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.95 OPEN[]CIRCUITDESIGN[]ROOT"\OT1/cmr/m/n/1
@@ -506,7 +510,7 @@ S1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.95 OPEN[]CIRCUITDESIGN[]ROOT"\OT1/cmr/m/n/1
  []
 
 
-Overfull \hbox (4.44247pt too wide) in paragraph at lines 686--692
+Overfull \hbox (4.44247pt too wide) in paragraph at lines 687--693
 \OT1/cmr/m/n/10.95 Ensure \TS1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.95 OPEN[]CIRCUI
 TDESIGN[]ROOT/bin \OT1/cmr/m/n/10.95 is on \OT1/cmtt/m/n/10.95 PATH \OT1/cmr/m/
 n/10.95 be-fore run-ning \OT1/cmtt/m/n/10.95 ./configure \OT1/cmr/m/n/10.95 (so
@@ -514,14 +518,14 @@ urc-ing \OT1/cmtt/m/n/10.95 setup.sh
  []
 
 
-Overfull \hbox (135.3778pt too wide) in paragraph at lines 686--692
+Overfull \hbox (135.3778pt too wide) in paragraph at lines 687--693
 \OT1/cmr/m/n/10.95 does this). If auto-detection still fails, pass ab-so-lute p
 aths ex-plic-itly via \OT1/cmtt/m/n/10.95 --with-magic=\TS1/cmtt/m/n/10.95 $\OT
 1/cmtt/m/n/10.95 OPEN[]CIRCUITDESIGN[]ROOT/bin/magic\OT1/cmr/m/n/10.95 ,
  []
 
 
-Overfull \hbox (127.32962pt too wide) in paragraph at lines 686--692
+Overfull \hbox (127.32962pt too wide) in paragraph at lines 687--693
 \OT1/cmtt/m/n/10.95 --with-netgen=\TS1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.95 OPEN
 []CIRCUITDESIGN[]ROOT/bin/netgen\OT1/cmr/m/n/10.95 , and \OT1/cmtt/m/n/10.95 --
 with-ngspice=\TS1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.95 OPEN[]CIRCUITDESIGN[]ROOT
@@ -529,7 +533,7 @@ with-ngspice=\TS1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.95 OPEN[]CIRCUITDESIGN[]ROOT
  []
 
 
-Overfull \hbox (64.2797pt too wide) in paragraph at lines 694--701
+Overfull \hbox (64.2797pt too wide) in paragraph at lines 695--702
 \TS1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.95 OPEN[]CIRCUITDESIGN[]ROOT\OT1/cmr/m/n/
 10.95 . Re-run \OT1/cmtt/m/n/10.95 ./configure \OT1/cmr/m/n/10.95 for \OT1/cmtt
 /m/n/10.95 open[]pdks \OT1/cmr/m/n/10.95 with \OT1/cmtt/m/n/10.95 --prefix="\TS
@@ -538,14 +542,14 @@ Overfull \hbox (64.2797pt too wide) in paragraph at lines 694--701
  []
 
 
-Overfull \hbox (34.8312pt too wide) in paragraph at lines 694--701
+Overfull \hbox (34.8312pt too wide) in paragraph at lines 695--702
 \OT1/cmr/m/n/10.95 or over-ride the PDK lo-ca-tion ex-plic-itly with \OT1/cmtt/
 m/n/10.95 --with-pdk[]root="\TS1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.95 OPEN[]CIRC
 UITDESIGN[]ROOT/share/pdk"\OT1/cmr/m/n/10.95 . 
  []
 
 
-Overfull \hbox (61.26701pt too wide) in paragraph at lines 703--707
+Overfull \hbox (61.26701pt too wide) in paragraph at lines 704--708
 \OT1/cmr/m/n/10.95 Source \OT1/cmtt/m/n/10.95 setup.sh \OT1/cmr/m/n/10.95 (it s
 ets \OT1/cmtt/m/n/10.95 LD[]LIBRARY[]PATH\OT1/cmr/m/n/10.95 ). For a system-wid
 e al-ter-na-tive, add \TS1/cmtt/m/n/10.95 $\OT1/cmtt/m/n/10.95 OPEN[]CIRCUITDES
@@ -556,13 +560,13 @@ IGN[]ROOT/lib
 <docker.png, id=435, 2162.0775pt x 1286.8075pt>
 File: docker.png Graphic file (type png)
 <use docker.png>
-Package pdftex.def Info: docker.png  used on input line 767.
+Package pdftex.def Info: docker.png  used on input line 768.
 (pdftex.def)             Requested size: 432.40784pt x 257.35693pt.
  [11] [12 <./docker.png>]
 <iic-osic.png, id=460, 1719.42375pt x 1074.0125pt>
 File: iic-osic.png Graphic file (type png)
 <use iic-osic.png>
-Package pdftex.def Info: iic-osic.png  used on input line 838.
+Package pdftex.def Info: iic-osic.png  used on input line 839.
 (pdftex.def)             Requested size: 343.87866pt x 214.79869pt.
  [13 <./iic-osic.png>] [14] [15]
 (./ocd-install.aux)
@@ -578,10 +582,10 @@ Package rerunfilecheck Info: File `ocd-install.out' has not changed.
 (rerunfilecheck)             Checksum: D340A4AAA726C77C6F3ED2791E9128AA;6806.
  ) 
 Here is how much of TeX's memory you used:
- 12280 strings out of 476182
- 185452 string characters out of 5795595
+ 12309 strings out of 476182
+ 186132 string characters out of 5795595
  2143975 words of memory out of 5000000
- 33864 multiletter control sequences out of 15000+600000
+ 33889 multiletter control sequences out of 15000+600000
  565493 words of font info for 62 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  75i,8n,79p,1200b,1966s stack positions out of 10000i,1000n,20000p,200000b,200000s
