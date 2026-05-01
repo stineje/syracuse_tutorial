@@ -2,6 +2,7 @@
 
 \usepackage[margin=1in]{geometry}
 \usepackage{xcolor}
+\usepackage{ragged2e}
 \usepackage{graphicx}
 \usepackage{seqsplit}
 \usepackage{listings}
@@ -665,6 +666,7 @@ $OPEN_CIRCUITDESIGN_ROOT
 \section{Troubleshooting}
 \label{sec:troubleshooting}
 
+\begin{RaggedRight}
 \begin{description}[leftmargin=0em, style=nextline]
   \item[\texttt{ERROR: Directory \$OPEN\_CIRCUITDESIGN\_ROOT does not exist}]
     \texttt{setup.sh} aborts when its target prefix is missing. Either
@@ -712,6 +714,7 @@ $OPEN_CIRCUITDESIGN_ROOT
     Re-run \texttt{open\_pdks} only when changing PDK selection or after a
     significant Magic/Netgen update.
 \end{description}
+\end{RaggedRight}
 
 \section{References}
 
