@@ -1,0 +1,1028 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = blue!60!black,
+  urlcolor   = blue!60!black,
+  citecolor  = blue!60!black,
+}
+
+% --- Code listing style -------------------------------------------------------
+\definecolor{shellbg}{HTML}{F5F5F5}
+\definecolor{shellrule}{HTML}{CCCCCC}
+\definecolor{shellcomment}{HTML}{6A737D}
+\definecolor{shellkeyword}{HTML}{005CC5}
+
+\lstdefinestyle{shell}{
+  basicstyle      = \ttfamily\footnotesize,
+  backgroundcolor = \color{shellbg},
+  frame           = single,
+  rulecolor       = \color{shellrule},
+  framesep        = 6pt,
+  xleftmargin     = 6pt,
+  xrightmargin    = 6pt,
+  breaklines      = true,
+  showstringspaces= false,
+  columns         = fullflexible,
+  keepspaces      = true,
+  commentstyle    = \color{shellcomment}\itshape,
+  keywordstyle    = \color{shellkeyword}\bfseries,
+  morecomment     = [l]{\#},
+  morekeywords    = {magic, export, source, cd, git, klayout, irsim, netgen,
+                     sudo, apt-get, dnf},
+  literate        = {/}{{/}}1 {-}{{-}}1 {=}{{=}}1,
+}
+\lstset{style=shell}
+
+% --- Tip / Warning boxes ------------------------------------------------------
+\newtcolorbox{tipbox}{
+  colback  = blue!5!white,
+  colframe = blue!60!black,
+  fonttitle= \bfseries,
+  title    = Tip,
+  breakable,
+}
+\newtcolorbox{warnbox}{
+  colback  = orange!8!white,
+  colframe = orange!80!black,
+  fonttitle= \bfseries,
+  title    = Important,
+  breakable,
+}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+
+% ==============================================================================
+\title{A Practical Tutorial for Magic VLSI Layout\\[4pt]
+       \large Using the GlobalFoundries 180\,nm PDK (\texttt{gf180mcuD})}
+\author{James E.\ Stine\\
+        Oklahoma State University\\
+        Electrical and Computer Engineering Department\\
+        Stillwater, OK 74078 USA\\
+        \texttt{james.stine@okstate.edu}}
+\date{\today}
+% ==============================================================================
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+% ==============================================================================
+\section{Introduction}
+% ==============================================================================
+
+Magic is an open-source VLSI layout editor originally written by John
+Ousterhout at UC~Berkeley and actively maintained by Tim Edwards at
+\url{http://opencircuitdesign.com}.
+It is the workhorse of the open-source analog/digital IC design flow,
+providing interactive layout, built-in Design Rule Checking (DRC), and
+netlist extraction---all in a single tool.
+Magic receives frequent updates; always prefer version 8.3 or later.
+
+This tutorial targets the \textbf{GlobalFoundries 180\,nm MCU PDK}
+(\texttt{gf180mcuD}), an open-source process development kit available
+through the \texttt{open\_pdks} installer and supported by Google's
+open-silicon initiative.
+The \texttt{gf180mcuD} process offers a 5-metal-layer CMOS flow (plus
+local interconnect) suitable for both digital and mixed-signal designs.
+All layer names, design rules, and command examples in this document
+refer to \texttt{gf180mcuD} unless otherwise noted.
+
+\begin{tipbox}
+Always prepare a \textbf{stick diagram} before opening Magic.
+Layout is a time sink; a hand sketch keeps you oriented and dramatically
+reduces trial-and-error.
+Think of it as your \emph{game plan}: spending just 5 minutes with a
+stick diagram up front can save you hours of backtracking, erasing, and
+re-routing inside Magic.
+It forces you to think through transistor placement, wire routing, and
+layer choices \emph{before} you are committed to geometry on screen---so
+that when you do open Magic, you know exactly what to draw and in what
+order.
+Keep your stick diagrams in a lab notebook or a digital file you can
+refer back to throughout the session.
+\end{tipbox}
+
+% ==============================================================================
+\section{Prerequisites and Setup}
+% ==============================================================================
+
+\subsection{Software}
+
+You need Magic (8.3+), \texttt{open\_pdks} with \texttt{gf180mcuD}
+installed, and optionally KLayout for printing or viewing GDS output.
+If you are using the IIC-OSIC-TOOLS Docker container
+(\url{https://github.com/iic-jku/iic-osic-tools}), all of this is
+pre-installed and pre-configured---skip ahead to
+Section~\ref{sec:launching}.
+
+For a native Linux build, follow the accompanying installation guide
+and confirm that the following environment variables are set
+(\texttt{setup.sh} handles this automatically):
+
+\begin{lstlisting}
+export OPEN_CIRCUITDESIGN_ROOT="$HOME/ocd"
+export PDK_ROOT="$OPEN_CIRCUITDESIGN_ROOT/share/pdk"
+export PDK=gf180mcuD
+\end{lstlisting}
+
+\subsection{Environment Check}
+
+Before starting any design work, verify that Magic can see the PDK:
+
+\begin{lstlisting}
+ls $PDK_ROOT/gf180mcuD/libs.tech/magic/
+# Should list: gf180mcuD.magicrc, gf180mcuD.tech, and related files
+\end{lstlisting}
+
+If the directory is empty or missing, re-run \texttt{open\_pdks} for
+\texttt{gf180mcuD} or verify that \texttt{PDK\_ROOT} is set correctly.
+
+\subsection{Create a Working Directory}
+
+Organize each design in its own directory to avoid file collisions:
+
+\begin{lstlisting}
+mkdir -p ~/designs/inverter
+cd ~/designs/inverter
+\end{lstlisting}
+
+% ==============================================================================
+\section{Launching Magic}
+\label{sec:launching}
+% ==============================================================================
+
+Always launch Magic with the \texttt{gf180mcuD} technology file so that
+the correct DRC rules, layer colors, and extraction rules are loaded:
+
+\begin{lstlisting}
+magic -rcfile $PDK_ROOT/gf180mcuD/libs.tech/magic/gf180mcuD.magicrc
+\end{lstlisting}
+
+Magic opens two windows simultaneously:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Graphics (layout) window} --- where you draw geometry.
+  \item \textbf{Text (console) window} --- where commands are typed and
+        all feedback, errors, and DRC messages appear.
+\end{itemize}
+
+\begin{warnbox}
+Keep \emph{both} windows visible at all times.
+DRC violations, extraction warnings, and all error messages appear
+\emph{only} in the text window.
+If something unexpected happens in the layout, look there first.
+\end{warnbox}
+
+% ==============================================================================
+\section{The Magic Interface}
+% ==============================================================================
+
+\subsection{Mouse Buttons}
+
+The mouse is your primary layout instrument.
+Learn these three actions before anything else:
+
+\begin{center}
+\begin{tabular}{@{}llp{8cm}@{}}
+\toprule
+\textbf{Button} & \textbf{Shorthand} & \textbf{Action} \\
+\midrule
+Left click   & L & Sets the \emph{lower-left} corner of the selection box \\
+Right click  & R & Sets the \emph{upper-right} corner of the selection box \\
+Middle click & M & Paints the layer the cursor hovers over in the palette,
+                   inside the current box \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{tipbox}
+The middle-click paint trick is one of Magic's fastest workflows: draw
+your box with L and R, hover your cursor over the desired color in the
+layer palette, then middle-click to fill immediately.
+\end{tipbox}
+
+\subsection{Entering Commands}
+
+Commands can be entered in three equivalent ways:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Single-character macros} typed in the graphics window
+        (e.g., \texttt{g} toggles the grid, \texttt{v} zooms to fit).
+  \item \textbf{Long commands} prefixed with a colon typed in the
+        \emph{text} window (e.g., \texttt{:paint poly},
+        \texttt{:drc why}).
+  \item \textbf{Mouse buttons} directly in the layout window for
+        painting and selection.
+\end{enumerate}
+
+\subsection{The Box Tool}
+
+All layout operations in Magic are relative to a rectangular
+\emph{box}---the selection region shown as a white or yellow outline in
+the layout window.
+The default tool is the \textbf{BOX} tool, indicated by a crosshair
+cursor.
+To ensure you are in box mode:
+
+\begin{lstlisting}
+:tool box
+\end{lstlisting}
+
+The \texttt{Space} bar cycles through all tools (Box, Wiring, Netlist,
+Pick).
+For basic drawing, always remain in Box mode.
+
+% ==============================================================================
+\section{Essential Command Reference}
+% ==============================================================================
+
+\subsection{File and View Commands}
+
+\begin{center}
+\begin{tabular}{@{}lp{9.5cm}@{}}
+\toprule
+\textbf{Command} & \textbf{Description} \\
+\midrule
+\texttt{:load \textit{name}}    & Load or create cell \textit{name}
+                                  (creates a new empty cell if none exists) \\
+\texttt{:save \textit{name}}    & Save current cell to
+                                  \textit{name}\texttt{.mag} \\
+\texttt{:quit}                  & Exit Magic \\
+\texttt{:view} or \texttt{v}    & Zoom to fit all painted geometry \\
+\texttt{:f}                     & Zoom to fit the entire cell boundary \\
+\texttt{:zoom \textit{n}}       & Zoom in by factor $n$
+                                  (\texttt{:zoom 0.5} zooms out) \\
+\texttt{z} / \texttt{Z}         & Zoom window to box / zoom in $\times 2$ \\
+\texttt{:grid} or \texttt{g}    & Toggle the visible grid \\
+\texttt{:grid \textit{n}}       & Display a grid of
+                                  $n\lambda \times n\lambda$ \\
+\texttt{:grid off}              & Turn grid off \\
+\texttt{:help [\textit{cmd}]}   & Print help for all or a specific command \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Painting and Erasing}
+
+\begin{lstlisting}
+:paint <layer>      # paint <layer> inside the current box
+:erase <layer>      # erase <layer> inside the current box
+:erase *            # erase ALL layers inside the box
+\end{lstlisting}
+
+\subsection{Selection and Editing}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Command}     & \textbf{Macro} & \textbf{Description} \\
+\midrule
+\texttt{:select}     & \texttt{a} & Select geometry inside the box \\
+\texttt{:copy}       & \texttt{c} & Copy the selection \\
+\texttt{:move}       & ---        & Move the selection \\
+\texttt{:delete}     & \texttt{d} & Delete the selection \\
+\texttt{:undo}       & \texttt{u} & Undo last action \\
+\texttt{:redo}       & \texttt{U} & Redo \\
+\texttt{:sideways}   & ---        & Flip selection horizontally \\
+\texttt{:upsidedown} & ---        & Flip selection vertically \\
+\texttt{:clockwise}  & ---        & Rotate selection 90$^\circ$ clockwise \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Keys \texttt{Q W E R} (pressed in the graphics window) nudge the
+selection by $1\lambda$ left, up, right, and down respectively.
+The \texttt{.}\ (dot) macro repeats the last command---invaluable for
+repetitive placement tasks.
+
+% ==============================================================================
+\section{gf180mcuD Layer Reference}
+% ==============================================================================
+
+The table below lists the most commonly used layers for basic cell
+layout in \texttt{gf180mcuD}.
+The \emph{Magic name} is exactly what you type after \texttt{:paint};
+the description gives the physical meaning.
+
+\begin{center}
+\begin{tabular}{@{}llp{7cm}@{}}
+\toprule
+\textbf{Magic Name} & \textbf{Type} & \textbf{Description} \\
+\midrule
+\texttt{nwell}   & Implant  & N-type well (body of pMOS transistors) \\
+\texttt{ndiff}   & Active   & N-type diffusion (nMOS source/drain) \\
+\texttt{pdiff}   & Active   & P-type diffusion (pMOS source/drain) \\
+\texttt{poly}    & Gate     & Polysilicon gate and short-range routing \\
+\texttt{ndc}     & Contact  & N-type diffusion-to-metal contact \\
+\texttt{pdc}     & Contact  & P-type diffusion-to-metal contact \\
+\texttt{nsc}     & Contact  & N-type substrate contact (tie to GND) \\
+\texttt{psc}     & Contact  & P-type substrate/well contact (tie to VDD) \\
+\texttt{pc}      & Contact  & Poly-to-metal1 contact \\
+\texttt{li}      & Metal    & Local interconnect (TiN); use sparingly \\
+\texttt{metal1}  & Metal    & Metal 1 --- primary routing layer \\
+\texttt{metal2}  & Metal    & Metal 2 \\
+\texttt{metal3}  & Metal    & Metal 3 \\
+\texttt{metal4}  & Metal    & Metal 4 \\
+\texttt{metal5}  & Metal    & Metal 5 (top layer) \\
+\texttt{via1}    & Via      & metal1 $\rightarrow$ metal2 \\
+\texttt{via2}    & Via      & metal2 $\rightarrow$ metal3 \\
+\texttt{via3}    & Via      & metal3 $\rightarrow$ metal4 \\
+\texttt{via4}    & Via      & metal4 $\rightarrow$ metal5 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{tipbox}
+\textbf{Use metals for routing---not poly or local interconnect.}
+Polysilicon has high resistance and capacitance.
+Local interconnect (\texttt{li}) is roughly 100$\times$ more resistive
+than \texttt{metal1} and should be reserved for very short connections
+where metal is physically impossible.
+Route all signals on \texttt{metal1} and \texttt{metal2} whenever
+possible.
+\end{tipbox}
+
+\subsection{Metal Stack Summary}
+
+\texttt{gf180mcuD} provides five aluminum metal layers plus local
+interconnect between poly and metal1:
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Layer} & \textbf{Magic Name} & \textbf{Typical Use} \\
+\midrule
+Local interconnect & \texttt{li}     & Short hops; use sparingly \\
+Metal 1            & \texttt{metal1} & Leaf-cell routing (horizontal) \\
+Metal 2            & \texttt{metal2} & Leaf-cell routing (vertical) \\
+Metal 3            & \texttt{metal3} & Block-level routing \\
+Metal 4            & \texttt{metal4} & Power distribution \\
+Metal 5            & \texttt{metal5} & Top-level power/ground straps \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For leaf cells (individual gates and standard cells), try to stay at
+metal1 and metal2 only.
+Reserving upper metal layers for higher levels of hierarchy makes
+block-level assembly and place-and-route much easier.
+Alternate metal1 (horizontal) and metal2 (vertical) where possible to
+minimize via counts and coupling.
+
+% ==============================================================================
+\section{Labeling and Ports}
+% ==============================================================================
+
+Labels attach logical names to layout geometry.
+They are required for power and ground nodes and for any signal you
+want to identify after netlist extraction.
+
+\begin{lstlisting}
+:label <name>
+\end{lstlisting}
+
+Position the box over the geometry to label, then run the command.
+Follow these conventions:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{\texttt{vdd!}} and \textbf{\texttt{gnd!}} --- supply
+        rails.
+        The \texttt{!}\ suffix marks a node as \emph{global}, meaning
+        it spans the entire design hierarchy.
+        Type these exactly as shown.
+  \item Signal names must match the schematic exactly; LVS compares
+        them character-for-character.
+  \item Adopt a consistent capitalization style within a project and
+        keep it.
+\end{itemize}
+
+\begin{warnbox}
+Label supply wires as \texttt{vdd!} and \texttt{gnd!}---not
+\texttt{VDD}, \texttt{GND}, or any other variant.
+Magic's extraction engine uses these exact strings to identify global
+supply nets during LVS.
+\end{warnbox}
+
+% ==============================================================================
+\section{Step-by-Step: CMOS Inverter Layout in gf180mcuD}
+% ==============================================================================
+
+This section walks through drawing a minimum-size CMOS inverter from
+scratch in \texttt{gf180mcuD}.
+Have your stick diagram ready before you begin.
+
+\subsection{Transistor Sizing}
+
+In \texttt{gf180mcuD} the minimum drawn gate length is
+$L_{\min} = 0.18\,\mu\text{m}$.
+A reasonable starting inverter uses:
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Transistor} & \textbf{Type} & \textbf{Width} & \textbf{Length} \\
+\midrule
+nMOS & N-channel & $0.42\,\mu\text{m}$ (minimum) & $0.18\,\mu\text{m}$ \\
+pMOS & P-channel & $0.84\,\mu\text{m}$ ($2\times$ nMOS) & $0.18\,\mu\text{m}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The pMOS is typically sized $2\times$ wider than the nMOS to equalize
+rise and fall times, since hole mobility is roughly half that of
+electrons.
+
+\subsection{Step 1 --- Launch Magic and Create a New Cell}
+
+\begin{lstlisting}
+cd ~/designs/inverter
+magic -rcfile $PDK_ROOT/gf180mcuD/libs.tech/magic/gf180mcuD.magicrc
+\end{lstlisting}
+
+In the text window, create a new cell named \texttt{inv}:
+
+\begin{lstlisting}
+:load inv
+\end{lstlisting}
+
+\subsection{Step 2 --- Draw the nMOS Diffusion}
+
+Draw the nMOS active region in the p-substrate.
+This defines the source and drain of the nMOS transistor.
+
+\begin{lstlisting}
+# nMOS source/drain region (in p-substrate)
+:paint ndiff
+\end{lstlisting}
+
+\subsection{Step 3 --- Draw the pMOS Diffusion}
+
+Draw the pMOS active region above (or beside) the nMOS region.
+Leave enough space between them for the N-well enclosure and any
+substrate/well taps you plan to add.
+
+\begin{lstlisting}
+# pMOS source/drain region
+:paint pdiff
+\end{lstlisting}
+
+\subsection{Step 4 --- Draw the Polysilicon Gate}
+
+The poly must cross \emph{both} active regions.
+It forms the transistor gate wherever it overlaps diffusion.
+
+\begin{lstlisting}
+:paint poly
+\end{lstlisting}
+
+Draw one continuous vertical poly strip crossing both the
+\texttt{ndiff} and \texttt{pdiff} regions.
+The crossing automatically creates the gate of each transistor.
+
+\begin{tipbox}
+Keep your poly strip as narrow as DRC allows.
+Wide poly increases gate capacitance and degrades switching speed.
+\end{tipbox}
+
+\subsection{Step 5 --- Add Diffusion Contacts}
+
+Connect the diffusion source/drain regions up to metal1 using diffusion
+contacts.
+
+\begin{lstlisting}
+# nMOS drain and source contacts
+:paint ndc
+
+# pMOS drain and source contacts
+:paint pdc
+\end{lstlisting}
+
+Place contacts inside the source and drain regions of each transistor,
+keeping them clear of the poly gate by the required spacing.
+
+\subsection{Step 6 --- Add a Poly Contact}
+
+To route the gate (poly) to a metal wire for the input signal:
+
+\begin{lstlisting}
+:paint pc
+\end{lstlisting}
+
+Place this at the top or bottom of the poly strip, wherever your input
+wire will land.
+
+\subsection{Step 7 --- Add Substrate and Well Taps}
+
+Well and substrate taps are essential to prevent latch-up.
+The p-substrate must be tied to \texttt{gnd!} and the N-well to
+\texttt{vdd!}.
+
+\begin{lstlisting}
+# N-type substrate contact (p-substrate tie to GND)
+:paint nsc
+
+# P-type well contact (N-well tie to VDD)
+:paint psc
+\end{lstlisting}
+
+Place \texttt{nsc} in the p-substrate and \texttt{psc} where the N-well
+will be.
+These taps also help define the final footprint of the pMOS region.
+
+\subsection{Step 8 --- Route with Metal1}
+
+Connect sources, drains, and gates using \texttt{metal1}:
+
+\begin{lstlisting}
+:paint metal1
+\end{lstlisting}
+
+Make the following connections:
+
+\begin{itemize}[leftmargin=2em]
+  \item nMOS source $\rightarrow$ \texttt{gnd!} (bottom power rail).
+  \item pMOS source $\rightarrow$ \texttt{vdd!} (top power rail).
+  \item nMOS drain + pMOS drain $\rightarrow$ output \texttt{Y}.
+  \item nMOS gate + pMOS gate $\rightarrow$ input \texttt{A}.
+\end{itemize}
+
+\subsection{Step 9 --- Add Labels}
+
+\begin{lstlisting}
+# Position box over the VDD metal1 wire, then:
+:label vdd!
+
+# Position box over the GND metal1 wire, then:
+:label gnd!
+
+# Position box over the output metal1 wire, then:
+:label Y
+
+# Position box over the input wire (poly or metal), then:
+:label A
+\end{lstlisting}
+
+\subsection{Step 10 --- Draw the N-Well}
+
+Now that the pMOS diffusion, well tap, and metal routing are all in
+place, you can see exactly how much area the pMOS region occupies.
+Draw the N-well last so you can size it precisely to enclose the
+\texttt{pdiff} and \texttt{psc} regions with the correct enclosure
+margin---no guesswork required.
+
+\begin{lstlisting}
+:paint nwell
+\end{lstlisting}
+
+Extend the N-well until it fully covers the \texttt{pdiff} and
+\texttt{psc} geometry with sufficient overlap on all sides.
+DRC will immediately highlight any enclosure violation if the N-well is
+too tight.
+
+\subsection{Step 11 --- Run DRC}
+
+\begin{lstlisting}
+:drc check
+:drc why
+\end{lstlisting}
+
+Magic runs DRC continuously in the background; \texttt{:drc why}
+explains any violation under or near the current box.
+Fix all violations before proceeding to extraction.
+
+\begin{warnbox}
+Do not proceed to extraction or LVS until DRC reports zero errors.
+A clean DRC is a hard prerequisite for a meaningful LVS comparison.
+\end{warnbox}
+
+\subsection{Step 12 --- Save}
+
+\begin{lstlisting}
+:save inv
+\end{lstlisting}
+
+This writes \texttt{inv.mag} to your current working directory.
+Save frequently; Magic does not auto-save.
+
+% ==============================================================================
+\section{Design Rule Checking (DRC)}
+% ==============================================================================
+
+Magic performs DRC continuously as you draw, highlighting violations in
+real time.
+The following commands are most useful during layout:
+
+\begin{center}
+\begin{tabular}{@{}lp{9.5cm}@{}}
+\toprule
+\textbf{Command}    & \textbf{Description} \\
+\midrule
+\texttt{:drc check} & Force a complete DRC pass \\
+\texttt{:drc why}   & Explain the DRC error inside the current box \\
+\texttt{:drc find}  & Move the box to the next DRC error \\
+\texttt{:drc count} & Report the total number of DRC errors \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Common DRC errors in \texttt{gf180mcuD} and how to fix them:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Poly too close to diffusion edge} --- increase the
+        spacing between the poly gate end and the edge of the diffusion
+        region.
+  \item \textbf{Contact enclosure violation} --- the surrounding
+        diffusion or metal region is too narrow; enlarge the enclosing
+        layer around the contact.
+  \item \textbf{N-well enclosure of pdiff insufficient} --- the N-well
+        must extend beyond the p-type diffusion by the required
+        enclosure distance; widen the N-well.
+  \item \textbf{Metal spacing violation} --- two metal1 wires are too
+        close together; increase the gap between them.
+  \item \textbf{Via overhang violation} --- vias in \texttt{gf180mcuD}
+        require a specific enclosure overhang on both the lower and
+        upper metal layers; ensure the metal extends far enough beyond
+        the via on all four sides.
+\end{itemize}
+
+% ==============================================================================
+\section{Extraction and Netlist Generation}
+% ==============================================================================
+
+Once DRC is clean, extract a netlist from the layout for LVS and
+post-layout simulation.
+
+\begin{lstlisting}
+:extract all
+:ext2spice hierarchy on
+:ext2spice format ngspice
+:ext2spice
+\end{lstlisting}
+
+This produces \texttt{inv.ext} (the intermediate extraction database)
+and \texttt{inv.spice} (a SPICE netlist with parasitic capacitances).
+You can also use the course convenience script if it is available in
+your environment:
+
+\begin{lstlisting}
+ext4mag inv.mag
+\end{lstlisting}
+
+This script generates both \texttt{.gds} and \texttt{.sim} files and
+optionally a SPICE deck (answer \texttt{N} when prompted about SPICE if
+you do not need it yet).
+
+% ==============================================================================
+\section{Layout vs.\ Schematic (LVS)}
+% ==============================================================================
+
+LVS verifies that your layout correctly implements the intended
+schematic.
+It is one of the most critical steps in the design flow.
+Many professional organizations list skipping LVS as a termination
+offense.
+Run LVS after every cell passes DRC, and use it as a progressive
+debugging tool as you assemble larger designs cell by cell.
+
+Run LVS with Netgen:
+
+\begin{lstlisting}
+netgen -batch lvs "inv.spice inv" \
+    "$PDK_ROOT/gf180mcuD/libs.tech/netgen/gf180mcuD_setup.tcl"
+\end{lstlisting}
+
+A passing result prints \textbf{Circuits match} with zero
+discrepancies.
+If it fails, Netgen lists the mismatched devices or nets---trace these
+back to errors in your layout or labels.
+
+\begin{tipbox}
+Most companies draw the schematic first, then create the layout to
+match it.
+A SPICE netlist from xschem or a textual HDL description both serve as
+valid references for Netgen.
+\end{tipbox}
+
+% ==============================================================================
+\section{Plotting and Printing Your Layout}
+% ==============================================================================
+
+Always use KLayout to produce layout documentation---never screenshots.
+KLayout renders GDS layers accurately and exports to postscript or PDF.
+
+\begin{lstlisting}
+# Inside Magic: write GDS
+:gds write inv
+
+# In a terminal: open with KLayout
+klayout inv.gds
+\end{lstlisting}
+
+To convert KLayout's postscript output to PDF:
+
+\begin{lstlisting}
+ps2pdf ./inv.ps inv.pdf
+\end{lstlisting}
+
+KLayout should be installed as part of your EDA tool suite.
+If layer colors do not appear correctly, import the
+\texttt{gf180mcuD} technology file via
+\textbf{Tools $\rightarrow$ Manage Technologies $\rightarrow$
+Import Technology}.
+
+% ==============================================================================
+\section{Switch-Level Simulation with IRSIM}
+% ==============================================================================
+
+After a successful LVS, validate digital logic function with IRSIM, a
+switch-level simulator that models transistors as ideal switches.
+IRSIM is much faster than full SPICE simulation and is well-suited for
+verifying logic correctness from extracted layout.
+
+\subsection{Extraction for IRSIM}
+
+\begin{lstlisting}
+# In Magic
+:extract all
+:ext2sim
+\end{lstlisting}
+
+This produces \texttt{inv.sim}, which IRSIM reads directly.
+
+\subsection{Running IRSIM}
+
+\begin{lstlisting}
+irsim $PDK_ROOT/gf180mcuD/libs.tech/irsim/gf180mcuD.prm inv.sim
+\end{lstlisting}
+
+\subsection{IRSIM Command Files}
+
+Automate stimulus with a \texttt{.cmd} file to build a reusable test
+vector set (often called a \emph{golden file}).
+A simple inverter command file:
+
+\begin{lstlisting}
+# inv.cmd
+stepsize 100
+| Initial state: A = 0, expect Y = 1
+set A 0
+c
+print Y
+| Toggle: A = 1, expect Y = 0
+set A 1
+c
+print Y
+| Toggle back: A = 0, expect Y = 1
+set A 0
+c
+print Y
+\end{lstlisting}
+
+Load and run the command file inside IRSIM:
+
+\begin{lstlisting}
+source inv.cmd
+\end{lstlisting}
+
+A correct inverter outputs \texttt{Y} high when \texttt{A} is low, and
+\texttt{Y} low when \texttt{A} is high.
+
+% ==============================================================================
+\section{The Complete Design Flow}
+% ==============================================================================
+
+The full open-source IC design flow for \texttt{gf180mcuD} is:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Draw schematic} in xschem or write a SPICE text netlist.
+  \item \textbf{Simulate schematic} with ngspice (SPICE) or IRSIM for
+        initial functional verification.
+  \item \textbf{Draw stick diagram} to plan transistor placement and
+        wire routing.
+  \item \textbf{Create layout} in Magic using the \texttt{gf180mcuD}
+        technology.
+  \item \textbf{Run DRC} --- fix all violations before moving forward.
+  \item \textbf{Run LVS} with Netgen against the schematic netlist.
+  \item \textbf{Extract and simulate layout} --- run ngspice or IRSIM
+        on the extracted netlist to capture parasitics and verify timing
+        and power.
+  \item \textbf{Plot} the layout using KLayout for documentation and
+        submission.
+\end{enumerate}
+
+\begin{warnbox}
+\textbf{Never skip LVS. This is not optional.}
+LVS is your guarantee that what you drew is actually what you designed.
+Skipping it is one of the most costly mistakes you can make in IC
+design---a layout that passes DRC but fails LVS will produce a chip that
+does not work, and at fabrication costs of thousands to hundreds of
+thousands of dollars per run, there is no opportunity to just ``try
+again.''
+The consequences in industry are severe: several companies explicitly
+list bypassing LVS as \textbf{grounds for immediate dismissal}.
+Run LVS after every cell passes DRC---not just at the top level, not
+just at the end of the project, but cell by cell as you build up the
+design.
+Catching a net mismatch in a single gate takes minutes to fix; finding
+the same error buried in a full-chip LVS failure can take days.
+ 
+Be warned: \textbf{getting LVS to pass is genuinely hard.}
+A failing LVS report is not a simple error message---it is a puzzle.
+The tool gives you clues in the form of mismatched nets, unmatched
+devices, and node-count discrepancies, and it is up to you to decode
+what they mean and trace them back to the root cause in your layout or
+labels.
+Approach it like a debugging session: read the output carefully, form a
+hypothesis, make one change, and re-run.
+ 
+Commercial tools such as Mentor/Siemens \textbf{Calibre~DRV} are the
+industry gold standard for this, offering rich GUI integrations that
+highlight mismatches directly in the layout and schematic side by side,
+making the puzzle significantly easier to solve.
+Open-source engines such as Netgen are capable and free, but they are
+typically slower and produce less guided output than their commercial
+counterparts.
+That is not a reason to avoid them---it is a reason to stay
+\textbf{vigilant and optimistic}.
+Read the output carefully, work through it methodically, and remember
+that a passing LVS is always achievable if your layout is correct.
+\end{warnbox}
+
+% ==============================================================================
+\section{Tips and Common Pitfalls}
+% ==============================================================================
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Always use a stick diagram.}
+        The single most effective way to avoid wasting hours in Magic is
+        to know exactly what you intend to draw before you open the
+        tool.
+
+  \item \textbf{Route on metal, not poly.}
+        Poly has significantly higher resistance and capacitance than
+        metal.
+        Use it only for the transistor gate and very short local
+        connections.
+
+  \item \textbf{Stay at metal1/metal2 in leaf cells.}
+        Reserve upper metal layers for block-level routing and power.
+        Wires are the dominant contributor to cell area; keeping them
+        at the lowest layers preserves routing resources for higher
+        levels of hierarchy.
+
+  \item \textbf{Alternate metal directions.}
+        Use metal1 for horizontal routing and metal2 for vertical
+        routing (HVH style) to minimize via counts and reduce coupling.
+
+  \item \textbf{Use pitch as a design-wide parameter.}
+        Establish a consistent wire pitch for all wires in a cell and
+        stick to it.
+        Uniform pitch makes cell abutment and later place-and-route
+        much smoother.
+
+  \item \textbf{Label everything.}
+        Supply rails (\texttt{vdd!}, \texttt{gnd!}) and all I/O
+        signals must be labeled for extraction and LVS to work
+        correctly.
+
+  \item \textbf{Save frequently.}
+        Use \texttt{:save} after any significant change.
+        Magic does not auto-save.
+
+  \item \textbf{Use scripts.}
+        Extraction, LVS, and GDS export are all scriptable.
+        A well-written script saves hours across a semester of design
+        work.
+        You can find the location of any installed script with
+        \texttt{which \textit{scriptname}}.
+
+  \item \textbf{Post problems publicly.}
+        Include a screenshot and a step-by-step description of what
+        you tried.
+        Other students learn from your problems, and public posts build
+        a searchable archive of solutions for the entire class.
+\end{itemize}
+
+% ==============================================================================
+\section{Quick-Reference Cheat Sheet}
+% ==============================================================================
+
+\subsection*{Keyboard Macros}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Key} & \textbf{Long form} & \textbf{Action} \\
+\midrule
+\texttt{v}       & \texttt{:view}     & Zoom to fit all geometry \\
+\texttt{g}       & \texttt{:grid}     & Toggle grid \\
+\texttt{a}       & \texttt{:select}   & Select inside box \\
+\texttt{c}       & \texttt{:copy}     & Copy selection \\
+\texttt{d}       & \texttt{:delete}   & Delete selection \\
+\texttt{u}       & \texttt{:undo}     & Undo \\
+\texttt{U}       & \texttt{:redo}     & Redo \\
+\texttt{z}       & ---                & Zoom window to box \\
+\texttt{Z}       & \texttt{:zoom 2}   & Zoom in $\times 2$ \\
+\texttt{.}       & ---                & Repeat last command \\
+\texttt{Q/W/E/R} & ---                & Nudge selection $1\lambda$
+                                        left/up/right/down \\
+Space            & \texttt{:tool box} & Cycle tools (return to Box) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Key Commands}
+
+\noindent To launch Magic, use (where \texttt{\$PDK\_ROOT} is set by \texttt{setup.sh}):
+\begin{lstlisting}
+magic -rcfile $PDK_ROOT/gf180mcuD/libs.tech/magic/gf180mcuD.magicrc
+\end{lstlisting}
+
+\noindent Alternatively, you can omit the \texttt{-rcfile} flag by placing a
+\texttt{.magicrc} file in your home or working directory that loads the
+technology automatically. Add the following line to \texttt{\textasciitilde/.magicrc}:
+\begin{lstlisting}
+tech load $env(PDK_ROOT)/gf180mcuD/libs.tech/magic/gf180mcuD.tech
+\end{lstlisting}
+\noindent With this in place, simply typing \texttt{magic} from any directory
+will automatically load the \texttt{gf180mcuD} technology without requiring
+the \texttt{-rcfile} argument each time.
+
+\begin{center}
+\begin{tabular}{@{}lp{7.5cm}@{}}
+\toprule
+\textbf{Command} & \textbf{Purpose} \\
+\midrule
+\texttt{:drc why}        & Explain DRC error inside current box \\
+\texttt{:drc find}       & Jump box to next DRC error \\
+\texttt{:extract all}    & Extract netlist from layout \\
+\texttt{:ext2spice}      & Write SPICE from extraction database \\
+\texttt{:ext2sim}        & Write .sim file for IRSIM \\
+\texttt{:gds write inv}  & Export GDS file \\
+\texttt{klayout inv.gds} & View or print GDS with KLayout \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Common Paint Commands for gf180mcuD}
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Command} & \textbf{What it draws} \\
+\midrule
+\texttt{:paint nwell}  & N-well (pMOS body) \\
+\texttt{:paint ndiff}  & N-type diffusion \\
+\texttt{:paint pdiff}  & P-type diffusion \\
+\texttt{:paint poly}   & Polysilicon gate \\
+\texttt{:paint ndc}    & N diffusion contact \\
+\texttt{:paint pdc}    & P diffusion contact \\
+\texttt{:paint nsc}    & N substrate contact \\
+\texttt{:paint psc}    & P well contact \\
+\texttt{:paint pc}     & Poly contact \\
+\texttt{:paint metal1} & Metal 1 \\
+\texttt{:paint metal2} & Metal 2 \\
+\texttt{:paint via1}   & Via between metal1 and metal2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ==============================================================================
+\section*{Additional Resources}
+\addcontentsline{toc}{section}{Additional Resources}
+% ==============================================================================
+
+\begin{itemize}[leftmargin=2em]
+  \item Magic documentation and tutorials:
+        \url{http://opencircuitdesign.com/magic}
+  \item gf180mcuD PDK documentation:
+        \url{https://gf180mcu-pdk.readthedocs.io}
+  \item open\_pdks repository (PDK installer):
+        \url{https://github.com/RTimothyEdwards/open_pdks}
+  \item IIC-OSIC-TOOLS Docker container:
+        \url{https://github.com/iic-jku/iic-osic-tools}
+  \item Course examples, scripts, and layout guides:
+        \url{https://stineje.github.io}
+  \item Video walkthroughs:
+        \url{https://www.youtube.com/user/jlstine/}
+\end{itemize}
+
+\end{document}
