@@ -15,8 +15,8 @@
 \contentsline {section}{\numberline {6}gf180mcuD Layer Reference}{7}{section.6}%
 \contentsline {subsection}{\numberline {6.1}Metal Stack Summary}{7}{subsection.6.1}%
 \contentsline {section}{\numberline {7}Labeling and Ports}{8}{section.7}%
-\contentsline {section}{\numberline {8}Step-by-Step: CMOS Inverter Layout in gf180mcuD}{8}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Transistor Sizing}{8}{subsection.8.1}%
+\contentsline {section}{\numberline {8}Step-by-Step: CMOS Inverter Layout in gf180mcuD}{9}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Transistor Sizing}{9}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}Step 1 --- Launch Magic and Create a New Cell}{9}{subsection.8.2}%
 \contentsline {subsection}{\numberline {8.3}Step 2 --- Draw the nMOS Diffusion}{9}{subsection.8.3}%
 \contentsline {subsection}{\numberline {8.4}Step 3 --- Draw the pMOS Diffusion}{9}{subsection.8.4}%
@@ -28,13 +28,13 @@
 \contentsline {subsection}{\numberline {8.10}Step 9 --- Add Labels}{11}{subsection.8.10}%
 \contentsline {subsection}{\numberline {8.11}Step 10 --- Draw the N-Well}{11}{subsection.8.11}%
 \contentsline {subsection}{\numberline {8.12}Step 11 --- Run DRC}{11}{subsection.8.12}%
-\contentsline {subsection}{\numberline {8.13}Step 12 --- Save}{11}{subsection.8.13}%
+\contentsline {subsection}{\numberline {8.13}Step 12 --- Save}{12}{subsection.8.13}%
 \contentsline {section}{\numberline {9}Design Rule Checking (DRC)}{12}{section.9}%
 \contentsline {section}{\numberline {10}Extraction and Netlist Generation}{12}{section.10}%
 \contentsline {section}{\numberline {11}Layout vs.\ Schematic (LVS)}{13}{section.11}%
 \contentsline {section}{\numberline {12}Plotting and Printing Your Layout}{13}{section.12}%
-\contentsline {section}{\numberline {13}Switch-Level Simulation with IRSIM}{13}{section.13}%
-\contentsline {subsection}{\numberline {13.1}Extraction for IRSIM}{13}{subsection.13.1}%
+\contentsline {section}{\numberline {13}Switch-Level Simulation with IRSIM}{14}{section.13}%
+\contentsline {subsection}{\numberline {13.1}Extraction for IRSIM}{14}{subsection.13.1}%
 \contentsline {subsection}{\numberline {13.2}Running IRSIM}{14}{subsection.13.2}%
 \contentsline {subsection}{\numberline {13.3}IRSIM Command Files}{14}{subsection.13.3}%
 \contentsline {section}{\numberline {14}The Complete Design Flow}{14}{section.14}%

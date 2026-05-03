@@ -256,8 +256,8 @@ Pick).
 For basic drawing, always remain in Box mode.
 \begin{warnbox}
 An accidental press of the \texttt{Space} bar will silently switch you
-out of Box mode---and because the cursor change is subtle, it is easy
-not to notice.
+out of Box mode---and because the cursor change is subtle, it is sometimes
+easy not to notice.
 If something stops working as expected---painting a layer produces no
 result, the box no longer resizes, or clicks seem to do the wrong
 thing---your first check should be whether you have inadvertently cycled
@@ -380,11 +380,25 @@ the description gives the physical meaning.
 \begin{tipbox}
 \textbf{Use metals for routing---not poly or local interconnect.}
 Polysilicon has high resistance and capacitance.
-Local interconnect (\texttt{li}) is roughly 100$\times$ more resistive
-than \texttt{metal1} and should be reserved for very short connections
+Local interconnect (e.g., \texttt{li}) is roughly 100$\times$ more resistive
+than \texttt{metal1} and should be reserved for short connections
 where metal is physically impossible.
 Route all signals on \texttt{metal1} and \texttt{metal2} whenever
 possible.
+
+Beyond resistance, there is a strong hierarchical reason to be
+conservative with metals at the leaf-cell level: \textbf{stay at
+metal1 and metal2 in leaf cells and leave the upper layers free.}
+When you assemble leaf cells into blocks, and blocks into a full chip,
+the higher metal layers are what the block-level and chip-level
+routers depend on for power distribution, clock routing, and
+inter-block signals.
+If your leaf cells already consume metal3, metal4, or metal5, you
+create conflicts that are painful---sometimes impossible---to resolve
+without redesigning the cells from scratch.
+Think of the metal stack as a shared resource across the entire
+hierarchy: be a good citizen at the bottom, and the upper levels of
+the design will be far easier to close.
 \end{tipbox}
 
 \subsection{Metal Stack Summary}
@@ -442,30 +456,35 @@ Follow these conventions:
 \end{itemize}
 
 \begin{tipbox}
-Try to label supply wires as \texttt{vdd!} and \texttt{gnd!}---not
-\texttt{VDD}, \texttt{GND}, or any other variant.  This is optional!
-Magic's extraction engine uses these exact strings to identify global
-supply nets during LVS.
-This is one of the most common sources of LVS failures for new users.
-The exclamation mark is not decorative---it is the character that tells
-Magic the net is \emph{global}, meaning it will automatically connect to
-every other net carrying the same label anywhere in the hierarchy,
-without requiring an explicit port or wire connection between cells.
-Omitting it, or using uppercase letters, produces a net that Magic
-treats as an ordinary local wire, which will either float or mismatch
-against the schematic during LVS.
-While it is technically possible to complete a small layout without
-placing any supply labels---Magic will not stop you---at least one
-\texttt{vdd!} and one \texttt{gnd!} label must appear somewhere in the
-design for extraction and LVS to function correctly.
-A layout with no supply labels will extract cleanly but produce an LVS
-result in which every transistor appears to have floating source and
-drain connections, making the comparison meaningless.
-In practice:
+\textbf{Supply net naming and the global net convention.}
+In Magic, appending \texttt{!} to a net name (e.g., \texttt{vdd!},
+\texttt{gnd!}) is a convention that designates that net as
+\emph{global}, meaning Magic will automatically connect every instance
+of that label across the entire hierarchy without requiring an explicit
+port or wire between cells.
+This can be convenient for small designs, but it is \textbf{optional}
+and entirely Magic-specific---it is not recognized by all tools, PDKs,
+or LVS configurations.
+Some flows define global supply nets through explicit port declarations,
+named power domains, or technology-file directives instead, and in
+those environments the \texttt{!} suffix may be ignored or behave
+unexpectedly.
+ 
+The more portable and robust habit is to label your supply wires with
+consistent, simple names---\texttt{vdd} and \texttt{gnd}, or whatever
+your schematic uses---and ensure those names match exactly between the
+layout and the schematic netlist.
+Whether or not you use the \texttt{!} convention, the rules that always
+apply are:
 \begin{itemize}
-\item \textbf{Use exactly} \texttt{vdd!} and \texttt{gnd!} --- all lowercase, with the exclamation mark, no spaces.
-\item \textbf{Place at least one of each} somewhere in the top-level layout, even if the label is on a wire that runs off-screen or connects only to a power ring.
-\item \textbf{Do not rely on implicit naming} --- if a wire is visually connected to the supply but carries no label, extraction will not recognize it as a supply net.
+  \item \textbf{Be consistent} --- pick a naming convention and stick
+        to it throughout the entire design.
+  \item \textbf{Match the schematic} --- LVS compares net names
+        character-for-character; \texttt{VDD} and \texttt{vdd} are
+        different nets.
+  \item \textbf{Label explicitly} --- a wire that is visually connected
+        to a supply but carries no label will not be recognized as a
+        supply net by the extractor.
 \end{itemize}
 \end{tipbox}
 
@@ -551,7 +570,8 @@ means less parasitic capacitance and faster switching.
 That said, some layers are intentionally drawn wider than minimum:
 supply rails, for example, are made wider to reduce resistance and
 handle higher current without excessive voltage drop.
-When in doubt, start at minimum and increase only when there is a
+When in doubt, start using minimum geometries
+and increase only when there is a
 specific reason to do so.
 \end{tipbox}
 
@@ -903,9 +923,9 @@ design---a layout that passes DRC but fails LVS will produce a chip that
 does not work, and at fabrication costs of thousands to hundreds of
 thousands of dollars per run, there is no opportunity to just ``try
 again.''
-The consequences in industry are severe: I have heard from colleagues that
-several companies explicitly
-list bypassing LVS as grounds for immediate dismissal.
+The consequences in industry are severe: I have heard from colleagues
+that several companies explicitly
+list bypassing LVS as grounds for immediate dismissal or a reprimand.
 Run LVS after every cell passes DRC---not just at the top level, not
 just at the end of the project, but cell by cell as you build up the
 design.
@@ -930,7 +950,7 @@ Open-source engines such as Netgen are capable and free, but they are
 typically slower and produce less guided output than their commercial
 counterparts.
 That is not a reason to avoid them---it is a reason to stay
-\textbf{vigilant and optimistic}.
+vigilant and optimistic.
 Read the output carefully, work through it methodically, and remember
 that a passing LVS is always achievable if your layout is correct.
 \end{warnbox}

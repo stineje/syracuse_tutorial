@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.2)  2 MAY 2026 19:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.2)  2 MAY 2026 21:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -794,27 +794,23 @@ Underfull \hbox (badness 3271) in paragraph at lines 364--365
 
 [7]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 433.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 447.
  [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] (./magic-tutorial.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `magic-tutorial.out' has not changed.
 (rerunfilecheck)             Checksum: DC2E98B5250BD1149D041FBB7D559FEE;7773.
  ) 
 Here is how much of TeX's memory you used:
- 26227 strings out of 474222
- 507274 string characters out of 5748734
- 2017975 words of memory out of 5000000
- 47909 multiletter control sequences out of 15000+600000
- 566559 words of font info for 67 fonts, out of 8000000 for 9000
+ 26224 strings out of 474222
+ 507238 string characters out of 5748734
+ 2023975 words of memory out of 5000000
+ 47907 multiletter control sequences out of 15000+600000
+ 566260 words of font info for 66 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 83i,10n,87p,1203b,1979s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 83i,10n,87p,1203b,1354s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmitt10.pfb></usr/share/tex
@@ -831,7 +827,7 @@ usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/sha
 re/texmf/fonts/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf/fonts/type1
 /public/cm-super/sftt0900.pfb></usr/share/texmf/fonts/type1/public/cm-super/sft
 t1095.pfb>
-Output written on magic-tutorial.pdf (17 pages, 269139 bytes).
+Output written on magic-tutorial.pdf (17 pages, 269954 bytes).
 PDF statistics:
  562 PDF objects out of 1000 (max. 8388607)
  503 compressed objects within 6 object streams
