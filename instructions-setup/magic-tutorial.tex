@@ -100,8 +100,8 @@ This tutorial targets the \textbf{GlobalFoundries 180\,nm MCU PDK}
 (\texttt{gf180mcuD}), an open-source process development kit available
 through the \texttt{open\_pdks} installer and supported by Google's
 open-silicon initiative.
-The \texttt{gf180mcuD} process offers a 5-metal-layer CMOS flow (plus
-local interconnect) suitable for both digital and mixed-signal designs.
+The \texttt{gf180mcuD} process offers a 5-metal-layer CMOS flow 
+suitable for both digital and mixed-signal designs.
 All layer names, design rules, and command examples in this document
 refer to \texttt{gf180mcuD} unless otherwise noted.
 
@@ -365,7 +365,6 @@ the description gives the physical meaning.
 \texttt{nsc}     & Contact  & N-type substrate contact (tie to GND) \\
 \texttt{psc}     & Contact  & P-type substrate/well contact (tie to VDD) \\
 \texttt{pc}      & Contact  & Poly-to-metal1 contact \\
-\texttt{li}      & Metal    & Local interconnect (TiN); use sparingly \\
 \texttt{metal1}  & Metal    & Metal 1 --- primary routing layer \\
 \texttt{metal2}  & Metal    & Metal 2 \\
 \texttt{metal3}  & Metal    & Metal 3 \\
@@ -381,8 +380,9 @@ the description gives the physical meaning.
 
 \begin{tipbox}
 \textbf{Use metals for routing---not poly or local interconnect.}
-Polysilicon has high resistance and capacitance.
-Local interconnect (e.g., \texttt{li}) is roughly 100$\times$ more resistive
+Polysilicon and local interconnect (e.g., \texttt{li}) have
+high resistance and capacitance.
+These layers are more resistive
 than \texttt{metal1} and should be reserved for short connections
 where metal is physically impossible.
 Route all signals on \texttt{metal1} and \texttt{metal2} whenever
