@@ -254,8 +254,8 @@ To ensure you are in box mode:
 The \texttt{Space} bar cycles through all tools (Box, Wiring, Netlist,
 Pick).
 For basic drawing, always remain in Box mode.
-
 \clearpage
+
 \begin{warnbox}
 An accidental press of the \texttt{Space} bar will silently switch you
 out of Box mode---and because the cursor change is subtle, it is sometimes
@@ -470,7 +470,7 @@ or LVS configurations.
 Some flows define global supply nets through explicit port declarations,
 named power domains, or technology-file directives instead, and in
 those environments the \texttt{!} suffix may be ignored or behave
-unexpectedly.
+unexpectedly.\\
  
 The more portable and robust habit is to label your supply wires with
 consistent, simple names---\texttt{vdd} and \texttt{gnd}, or whatever
@@ -916,8 +916,15 @@ The full open-source IC design flow for \texttt{gf180mcuD} is:
   \item \textbf{Plot} the layout using KLayout for documentation and
         submission.
 \end{enumerate}
+\clearpage
 
-\begin{warnbox}
+\begin{tcolorbox}[
+  colback  = red!8!white,
+  colframe = red!70!black,
+  fonttitle= \bfseries,
+  title    = Important,
+  breakable,
+]
 \textbf{Never skip LVS. This is not optional.}
 LVS is your guarantee that what you drew is actually what you designed.
 Skipping it is one of the most costly mistakes you can make in IC
@@ -932,8 +939,7 @@ Run LVS after every cell passes DRC---not just at the top level, not
 just at the end of the project, but cell by cell as you build up the
 design.
 Catching a net mismatch in a single gate takes minutes to fix; finding
-the same error buried in a full-chip LVS failure can take days, 
-weeks, or months.
+the same error buried in a full-chip LVS failure can take days.\\
  
 Be warned: \textbf{getting LVS to pass is genuinely extremely hard.}
 A failing LVS report is not a simple error message---it is a puzzle.
@@ -942,9 +948,9 @@ devices, and node-count discrepancies, and it is up to you to decode
 what they mean and trace them back to the root cause in your layout or
 labels.
 Approach it like a debugging session: read the output carefully, form a
-hypothesis, make one change, and re-run.
+hypothesis, make one change, and re-run. \\
  
-Commercial tools such as Mentor/Siemens \textbf{Calibre~DRV} are the
+Commercial tools such as Mentor/Siemens Calibre~DRV are the
 industry gold standard for this, offering rich GUI integrations that
 highlight mismatches directly in the layout and schematic side by side,
 making the puzzle significantly easier to solve.
@@ -955,7 +961,7 @@ That is not a reason to avoid them---it is a reason to stay
 vigilant and optimistic.
 Read the output carefully, work through it methodically, and remember
 that a passing LVS is always achievable if your layout is correct.
-\end{warnbox}
+\end{tcolorbox}
 
 % ==============================================================================
 \section{Tips and Common Pitfalls}
