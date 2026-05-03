@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.2)  2 MAY 2026 16:47
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.2)  2 MAY 2026 19:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -787,15 +787,15 @@ LaTeX Font Info:    Trying to load font information for TS1+cmtt on input line
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmtt.fd
 File: ts1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
-) [3{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] [4] [5]
-Underfull \hbox (badness 3271) in paragraph at lines 337--338
+) [3{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] [4] [5] [6]
+Underfull \hbox (badness 3271) in paragraph at lines 364--365
 []\OT1/cmr/m/n/10.95 P-type sub-strate/well con-tact (tie to
  []
 
-[6]
+[7]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 406.
- [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] (./magic-tutorial.aux)
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 433.
+ [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] (./magic-tutorial.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -805,16 +805,16 @@ L3 programming layer <2024-01-22>
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
 Package rerunfilecheck Info: File `magic-tutorial.out' has not changed.
-(rerunfilecheck)             Checksum: A06A35B8A7AF54159963169CEA7AC597;7773.
+(rerunfilecheck)             Checksum: DC2E98B5250BD1149D041FBB7D559FEE;7773.
  ) 
 Here is how much of TeX's memory you used:
- 26221 strings out of 474222
- 507187 string characters out of 5748734
- 2016975 words of memory out of 5000000
- 47906 multiletter control sequences out of 15000+600000
+ 26227 strings out of 474222
+ 507274 string characters out of 5748734
+ 2017975 words of memory out of 5000000
+ 47909 multiletter control sequences out of 15000+600000
  566559 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 83i,10n,87p,1203b,1354s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 83i,10n,87p,1203b,1979s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmitt10.pfb></usr/share/tex
@@ -831,10 +831,10 @@ usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/sha
 re/texmf/fonts/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf/fonts/type1
 /public/cm-super/sftt0900.pfb></usr/share/texmf/fonts/type1/public/cm-super/sft
 t1095.pfb>
-Output written on magic-tutorial.pdf (16 pages, 262875 bytes).
+Output written on magic-tutorial.pdf (17 pages, 269139 bytes).
 PDF statistics:
- 555 PDF objects out of 1000 (max. 8388607)
- 498 compressed objects within 5 object streams
- 183 named destinations out of 1000 (max. 500000)
+ 562 PDF objects out of 1000 (max. 8388607)
+ 503 compressed objects within 6 object streams
+ 186 named destinations out of 1000 (max. 500000)
  357 words of extra memory for PDF output out of 10000 (max. 10000000)
 

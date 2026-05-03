@@ -189,6 +189,14 @@ Keep \emph{both} windows visible at all times.
 DRC violations, extraction warnings, and all error messages appear
 \emph{only} in the text window.
 If something unexpected happens in the layout, look there first.
+The graphical window will often appear completely normal even when serious problems exist --- a DRC violation does not flash or highlight itself automatically, and an extraction warning produces no visible artifact in the layout view. The \emph{only} indication that something has gone wrong is a message in the text window. Minimizing or hiding that window --- even briefly --- means you can miss critical feedback without realizing it.
+A few practical habits follow from this:
+\begin{itemize}
+\item \textbf{After every major operation} (placing a cell, running DRC, extracting a net), glance at the text window before continuing.
+\item \textbf{After a DRC run}, scroll through the full text output rather than stopping at the first clean result --- later violations may be more serious.
+\item \textbf{When behavior seems wrong} --- a command appears to do nothing, a shape doesn't appear where expected, or a tool exits immediately --- the explanation is almost always already waiting in the text window.
+\end{itemize}
+Treat the text window not as a log to be consulted occasionally, but as a live diagnostic stream that runs in parallel with everything you do.
 \end{warnbox}
 
 % ==============================================================================
@@ -234,21 +242,40 @@ Commands can be entered in three equivalent ways:
 \end{enumerate}
 
 \subsection{The Box Tool}
-
 All layout operations in Magic are relative to a rectangular
 \emph{box}---the selection region shown as a white or yellow outline in
 the layout window.
 The default tool is the \textbf{BOX} tool, indicated by a crosshair
 cursor.
 To ensure you are in box mode:
-
 \begin{lstlisting}
 :tool box
 \end{lstlisting}
-
 The \texttt{Space} bar cycles through all tools (Box, Wiring, Netlist,
 Pick).
 For basic drawing, always remain in Box mode.
+\begin{warnbox}
+An accidental press of the \texttt{Space} bar will silently switch you
+out of Box mode---and because the cursor change is subtle, it is easy
+not to notice.
+If something stops working as expected---painting a layer produces no
+result, the box no longer resizes, or clicks seem to do the wrong
+thing---your first check should be whether you have inadvertently cycled
+to a different tool.
+This is an extremely common source of confusion, especially when
+typing commands while the cursor is over the layout window, since a
+space in what you \emph{think} is the text window will instead be
+captured by the layout window and advance the tool cycle.
+To recover, either press \texttt{Space} repeatedly until the crosshair
+cursor returns, or type the explicit command:
+\begin{lstlisting}
+:tool box
+\end{lstlisting}
+which will always return you to Box mode regardless of which tool is
+currently active.
+Make it a habit to run this command any time behavior feels
+unexpected before attempting to diagnose anything else.
+\end{warnbox}
 
 % ==============================================================================
 \section{Essential Command Reference}
@@ -414,12 +441,33 @@ Follow these conventions:
         keep it.
 \end{itemize}
 
-\begin{warnbox}
-Label supply wires as \texttt{vdd!} and \texttt{gnd!}---not
-\texttt{VDD}, \texttt{GND}, or any other variant.
+\begin{tipbox}
+Try to label supply wires as \texttt{vdd!} and \texttt{gnd!}---not
+\texttt{VDD}, \texttt{GND}, or any other variant.  This is optional!
 Magic's extraction engine uses these exact strings to identify global
 supply nets during LVS.
-\end{warnbox}
+This is one of the most common sources of LVS failures for new users.
+The exclamation mark is not decorative---it is the character that tells
+Magic the net is \emph{global}, meaning it will automatically connect to
+every other net carrying the same label anywhere in the hierarchy,
+without requiring an explicit port or wire connection between cells.
+Omitting it, or using uppercase letters, produces a net that Magic
+treats as an ordinary local wire, which will either float or mismatch
+against the schematic during LVS.
+While it is technically possible to complete a small layout without
+placing any supply labels---Magic will not stop you---at least one
+\texttt{vdd!} and one \texttt{gnd!} label must appear somewhere in the
+design for extraction and LVS to function correctly.
+A layout with no supply labels will extract cleanly but produce an LVS
+result in which every transistor appears to have floating source and
+drain connections, making the comparison meaningless.
+In practice:
+\begin{itemize}
+\item \textbf{Use exactly} \texttt{vdd!} and \texttt{gnd!} --- all lowercase, with the exclamation mark, no spaces.
+\item \textbf{Place at least one of each} somewhere in the top-level layout, even if the label is on a wire that runs off-screen or connects only to a power ring.
+\item \textbf{Do not rely on implicit naming} --- if a wire is visually connected to the supply but carries no label, extraction will not recognize it as a supply net.
+\end{itemize}
+\end{tipbox}
 
 % ==============================================================================
 \section{Step-by-Step: CMOS Inverter Layout in gf180mcuD}
@@ -498,8 +546,13 @@ Draw one continuous vertical poly strip crossing both the
 The crossing automatically creates the gate of each transistor.
 
 \begin{tipbox}
-Keep your poly strip as narrow as DRC allows.
-Wide poly increases gate capacitance and degrades switching speed.
+Keep dimensions at the DRC minimum where possible---smaller geometry
+means less parasitic capacitance and faster switching.
+That said, some layers are intentionally drawn wider than minimum:
+supply rails, for example, are made wider to reduce resistance and
+handle higher current without excessive voltage drop.
+When in doubt, start at minimum and increase only when there is a
+specific reason to do so.
 \end{tipbox}
 
 \subsection{Step 5 --- Add Diffusion Contacts}
@@ -579,6 +632,20 @@ Make the following connections:
 # Position box over the input wire (poly or metal), then:
 :label A
 \end{lstlisting}
+
+\begin{tipbox}
+When you need many similar labels---numbered pins, repeated bus
+signals, or sequentially named wires---typing each one individually
+in Magic can be tedious and error-prone.
+Because Magic's layout files (\texttt{.mag}) are plain text, a useful
+shortcut is to create one label, save the file, open it in any text
+editor, and use find-and-replace to duplicate or rename the label
+entries directly.
+When you reopen the file in Magic, all of the edited labels appear
+exactly as written---no retyping required.
+This is especially handy for buses where only a trailing index number
+changes (e.g., \texttt{data[0]} through \texttt{data[7]}).
+\end{tipbox}
 
 \subsection{Step 10 --- Draw the N-Well}
 
@@ -836,15 +903,17 @@ design---a layout that passes DRC but fails LVS will produce a chip that
 does not work, and at fabrication costs of thousands to hundreds of
 thousands of dollars per run, there is no opportunity to just ``try
 again.''
-The consequences in industry are severe: several companies explicitly
-list bypassing LVS as \textbf{grounds for immediate dismissal}.
+The consequences in industry are severe: I have heard from colleagues that
+several companies explicitly
+list bypassing LVS as grounds for immediate dismissal.
 Run LVS after every cell passes DRC---not just at the top level, not
 just at the end of the project, but cell by cell as you build up the
 design.
 Catching a net mismatch in a single gate takes minutes to fix; finding
-the same error buried in a full-chip LVS failure can take days.
+the same error buried in a full-chip LVS failure can take days, 
+weeks, or months.
  
-Be warned: \textbf{getting LVS to pass is genuinely hard.}
+Be warned: \textbf{getting LVS to pass is genuinely extremely hard.}
 A failing LVS report is not a simple error message---it is a puzzle.
 The tool gives you clues in the form of mismatched nets, unmatched
 devices, and node-count discrepancies, and it is up to you to decode
