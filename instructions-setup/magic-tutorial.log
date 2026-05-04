@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.2)  3 MAY 2026 21:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.2)  3 MAY 2026 21:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -801,21 +801,21 @@ Underfull \hbox (badness 10000) in paragraph at lines 382--390
 
 [7]
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 448.
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 446.
 
-Underfull \hbox (badness 10000) in paragraph at lines 460--473
+Underfull \hbox (badness 10000) in paragraph at lines 458--471
 
  []
 
 [8] [9] [10] [11] [12
 
 ] [13] [14] [15]
-Underfull \hbox (badness 10000) in paragraph at lines 928--943
+Underfull \hbox (badness 10000) in paragraph at lines 926--941
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 944--952
+Underfull \hbox (badness 10000) in paragraph at lines 942--950
 
  []
 
@@ -853,7 +853,7 @@ usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/sha
 re/texmf/fonts/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf/fonts/type1
 /public/cm-super/sftt0900.pfb></usr/share/texmf/fonts/type1/public/cm-super/sft
 t1095.pfb>
-Output written on magic-tutorial.pdf (18 pages, 270014 bytes).
+Output written on magic-tutorial.pdf (18 pages, 269991 bytes).
 PDF statistics:
  567 PDF objects out of 1000 (max. 8388607)
  507 compressed objects within 6 object streams
